@@ -1,0 +1,124 @@
+import { CircleCheck, Pencil, Plus, Search } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ActiveSwitch } from "@/components/admin/ActiveSwitch";
+import { EmptyState, PageHeader } from "@/components/admin/ui";
+import { CATEGORIES, categoryLabel } from "@/lib/constants";
+import { formatPrice } from "@/lib/format";
+import { getAdmin } from "@/lib/supabase/server";
+import type { Product } from "@/lib/types";
+
+export const metadata = { title: "Produits" };
+
+type SP = Promise<{ q?: string; categorie?: string; ok?: string }>;
+
+export default async function AdminProductsPage({ searchParams }: { searchParams: SP }) {
+  const { q, categorie, ok } = await searchParams;
+  const { supabase } = await getAdmin();
+
+  let req = supabase.from("products").select("*, collection:collections(name, slug)").order("created_at", { ascending: false });
+  if (categorie) req = req.eq("category", categorie);
+  if (q) {
+    const safe = q.replace(/[,()*%\\]/g, " ").trim();
+    if (safe) req = req.ilike("name", `%${safe}%`);
+  }
+  const { data } = await req;
+  const products = (data ?? []) as Product[];
+
+  return (
+    <>
+      <PageHeader title="Produits" description={`${products.length} produit${products.length > 1 ? "s" : ""} au catalogue`}>
+        <Link href="/admin/produits/nouveau" className="btn-primary rounded-md px-5">
+          <Plus className="h-4 w-4" /> Nouveau produit
+        </Link>
+      </PageHeader>
+
+      {ok && (
+        <p role="status" className="mb-5 flex items-center gap-2 rounded-md bg-emerald-50 px-4 py-3 text-[14px] text-emerald-800">
+          <CircleCheck className="h-4 w-4" /> Produit enregistré. La boutique est à jour.
+        </p>
+      )}
+
+      <form className="mb-5 flex flex-col gap-3 sm:flex-row" role="search">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-taupe" />
+          <label htmlFor="q" className="sr-only">
+            Rechercher un produit
+          </label>
+          <input id="q" name="q" defaultValue={q} placeholder="Rechercher un produit…" className="field rounded-md pl-9" />
+        </div>
+        <label htmlFor="categorie" className="sr-only">
+          Catégorie
+        </label>
+        <select id="categorie" name="categorie" defaultValue={categorie ?? ""} className="field cursor-pointer rounded-md sm:w-56">
+          <option value="">Toutes les catégories</option>
+          {CATEGORIES.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+        <button type="submit" className="btn-outline rounded-md">
+          Filtrer
+        </button>
+      </form>
+
+      {products.length === 0 ? (
+        <EmptyState title="Aucun produit" text="Ajoutez votre première création pour l'afficher dans la boutique.">
+          <Link href="/admin/produits/nouveau" className="btn-primary rounded-md">
+            Ajouter un produit
+          </Link>
+        </EmptyState>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-sable bg-white">
+          <table className="w-full min-w-[720px] text-left text-[13px]">
+            <thead className="bg-ivoire text-[11px] uppercase tracking-[0.12em] text-taupe">
+              <tr>
+                <th className="px-5 py-3 font-medium">Produit</th>
+                <th className="px-5 py-3 font-medium">Catégorie</th>
+                <th className="px-5 py-3 text-right font-medium">Prix</th>
+                <th className="px-5 py-3 text-right font-medium">Stock</th>
+                <th className="px-5 py-3 text-center font-medium">Visible</th>
+                <th className="px-5 py-3">
+                  <span className="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-sable">
+              {products.map((p) => (
+                <tr key={p.id} className="transition-colors hover:bg-ivoire">
+                  <td className="px-5 py-3">
+                    <Link href={`/admin/produits/${p.id}`} className="flex items-center gap-3">
+                      <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded bg-[#F6F1EB]">
+                        {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-cover mix-blend-multiply" />}
+                      </span>
+                      <span>
+                        <span className="block font-medium text-encre hover:underline">{p.name}</span>
+                        <span className="text-[12px] text-taupe">{p.collection?.name ?? "Sans collection"}</span>
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="px-5 py-3 text-taupe">{categoryLabel(p.category)}</td>
+                  <td className="px-5 py-3 text-right tabular-nums">{formatPrice(p.price)}</td>
+                  <td className="px-5 py-3 text-right tabular-nums">
+                    <span className={p.stock <= 0 ? "font-medium text-bordeaux-600" : p.stock <= 2 ? "font-medium text-or-700" : ""}>
+                      {p.stock <= 0 ? "Épuisé" : p.stock}
+                    </span>
+                  </td>
+                  <td className="px-5 py-1 text-center">
+                    <ActiveSwitch id={p.id} active={p.is_active} label={p.name} />
+                  </td>
+                  <td className="px-5 py-3 text-right">
+                    <Link href={`/admin/produits/${p.id}`} aria-label={`Modifier ${p.name}`} className="inline-flex h-10 w-10 items-center justify-center rounded-md text-bordeaux-900 hover:bg-champagne">
+                      <Pencil className="h-4 w-4" strokeWidth={1.5} />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  );
+}

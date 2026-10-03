@@ -1,0 +1,272 @@
+"use client";
+
+import { Banknote, LoaderCircle, Lock, ShoppingBag } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { QuantityStepper } from "@/components/site/CartDrawer";
+import { useCart } from "@/lib/cart";
+import { formatPrice } from "@/lib/format";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+
+type Form = {
+  full_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postal_code: string;
+  country: string;
+  notes: string;
+};
+
+const EMPTY: Form = { full_name: "", email: "", phone: "", address: "", city: "", postal_code: "", country: "Maroc", notes: "" };
+
+const REQUIRED: { key: keyof Form; message: string }[] = [
+  { key: "full_name", message: "Indiquez votre nom complet." },
+  { key: "email", message: "Indiquez votre adresse e-mail." },
+  { key: "phone", message: "Indiquez un numéro de téléphone pour la livraison." },
+  { key: "address", message: "Indiquez votre adresse de livraison." },
+  { key: "city", message: "Indiquez votre ville." },
+];
+
+export function Checkout() {
+  const router = useRouter();
+  const { items, ready, subtotal, update, remove, clear } = useCart();
+  const [form, setForm] = useState<Form>(EMPTY);
+  const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Pré-remplissage pour les clients connectés
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle();
+      setForm((f) => ({
+        ...f,
+        email: f.email || user.email || "",
+        full_name: f.full_name || profile?.full_name || "",
+        phone: f.phone || profile?.phone || "",
+      }));
+    });
+  }, []);
+
+  const set = (key: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+    if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }));
+  };
+
+  const validate = () => {
+    const next: typeof errors = {};
+    for (const { key, message } of REQUIRED) if (!form[key].trim()) next[key] = message;
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Cette adresse e-mail semble invalide (ex. : nom@exemple.com).";
+    if (form.phone && form.phone.replace(/\D/g, "").length < 8) next.phone = "Ce numéro semble trop court.";
+    setErrors(next);
+    const first = Object.keys(next)[0];
+    if (first) formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+    return !first;
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setServerError("");
+    if (!validate()) return;
+    if (!isSupabaseConfigured) {
+      setServerError("Mode démo : connectez la base Supabase pour enregistrer les commandes (voir README).");
+      return;
+    }
+    setSubmitting(true);
+    const { data, error } = await createClient().rpc("place_order", {
+      p_customer: form,
+      p_items: items.map((i) => ({ product_id: i.productId, quantity: i.quantity })),
+    });
+    if (error || !data) {
+      setSubmitting(false);
+      setServerError(error?.message || "La commande n'a pas pu être enregistrée. Veuillez réessayer.");
+      return;
+    }
+    clear();
+    router.push(`/commande/${(data as { id: string }).id}`);
+  };
+
+  if (!ready) {
+    return <div className="skeleton mx-auto h-96 max-w-5xl" />;
+  }
+
+  if (!items.length) {
+    return (
+      <div className="mx-auto max-w-md py-20 text-center">
+        <ShoppingBag className="mx-auto h-12 w-12 text-or-500" strokeWidth={1} />
+        <h2 className="mt-6 font-serif text-4xl text-bordeaux-900">Votre panier est vide</h2>
+        <p className="mt-3 text-[15px] text-taupe">Découvrez nos créations et laissez-vous séduire.</p>
+        <Link href="/boutique" className="btn-primary mt-8">
+          Découvrir la joaillerie
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <form ref={formRef} onSubmit={submit} noValidate className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      <div className="space-y-12 lg:col-span-7">
+        {/* Articles */}
+        <section aria-labelledby="cart-title">
+          <h2 id="cart-title" className="eyebrow mb-6 text-bordeaux-900">
+            1. Vos créations
+          </h2>
+          <ul className="divide-y divide-sable border-y border-sable">
+            {items.map((item) => (
+              <li key={item.productId} className="flex gap-5 py-6">
+                <Link href={`/produit/${item.slug}`} className="relative h-28 w-28 shrink-0 overflow-hidden bg-[#F6F1EB] md:h-32 md:w-32">
+                  {item.image && <Image src={item.image} alt={item.name} fill sizes="128px" className="object-cover mix-blend-multiply" />}
+                </Link>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      {item.collection && <p className="font-serif text-[16px] italic text-or-700">{item.collection}</p>}
+                      <Link href={`/produit/${item.slug}`} className="text-[15px] text-encre hover:underline">
+                        {item.name}
+                      </Link>
+                    </div>
+                    <p className="shrink-0 text-[15px] tabular-nums">{formatPrice(item.price * item.quantity)}</p>
+                  </div>
+                  <div className="mt-auto flex items-center justify-between pt-4">
+                    <QuantityStepper value={item.quantity} max={Math.min(20, Math.max(item.stock, 1))} onChange={(q) => update(item.productId, q)} label={item.name} />
+                    <button type="button" onClick={() => remove(item.productId)} className="min-h-[44px] cursor-pointer text-[11px] uppercase tracking-[0.15em] text-taupe hover:text-bordeaux-900 hover:underline">
+                      Retirer
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Informations acheteur */}
+        <section aria-labelledby="shipping-title">
+          <h2 id="shipping-title" className="eyebrow mb-6 text-bordeaux-900">
+            2. Informations de livraison
+          </h2>
+          <fieldset className="grid gap-5 sm:grid-cols-2" disabled={submitting}>
+            <Field label="Nom complet" name="full_name" value={form.full_name} onChange={set("full_name")} error={errors.full_name} autoComplete="name" required className="sm:col-span-2" />
+            <Field label="E-mail" name="email" type="email" value={form.email} onChange={set("email")} error={errors.email} autoComplete="email" required />
+            <Field label="Téléphone" name="phone" type="tel" value={form.phone} onChange={set("phone")} error={errors.phone} autoComplete="tel" required />
+            <Field label="Adresse" name="address" value={form.address} onChange={set("address")} error={errors.address} autoComplete="street-address" required className="sm:col-span-2" />
+            <Field label="Ville" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required />
+            <Field label="Code postal" name="postal_code" value={form.postal_code} onChange={set("postal_code")} autoComplete="postal-code" />
+            <Field label="Pays" name="country" value={form.country} onChange={set("country")} autoComplete="country-name" className="sm:col-span-2" />
+            <div className="sm:col-span-2">
+              <label htmlFor="notes" className="field-label">
+                Message ou gravure <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
+              </label>
+              <textarea id="notes" name="notes" rows={3} value={form.notes} onChange={set("notes")} className="field py-3" placeholder="Initiales à graver, instructions de livraison, message cadeau…" />
+            </div>
+          </fieldset>
+        </section>
+
+        <section aria-labelledby="payment-title">
+          <h2 id="payment-title" className="eyebrow mb-6 text-bordeaux-900">
+            3. Paiement
+          </h2>
+          <div className="flex items-start gap-4 border border-bordeaux-900 bg-ivoire p-5">
+            <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-or-700" strokeWidth={1.4} />
+            <div>
+              <p className="text-[14px] font-medium text-encre">Paiement à la livraison</p>
+              <p className="mt-1 text-[14px] text-taupe">Vous réglez votre commande en espèces ou par carte au moment de la réception.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Récapitulatif */}
+      <aside className="lg:col-span-5">
+        <div className="bg-ivoire p-6 md:p-8 lg:sticky lg:top-[136px]">
+          <h2 className="font-serif text-[28px] text-bordeaux-900">Récapitulatif</h2>
+          <dl className="mt-6 space-y-3 text-[14px]">
+            <div className="flex justify-between">
+              <dt className="text-taupe">Sous-total</dt>
+              <dd className="tabular-nums">{formatPrice(subtotal)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-taupe">Livraison</dt>
+              <dd className="text-or-700">Offerte</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-taupe">Écrin signature</dt>
+              <dd className="text-or-700">Offert</dd>
+            </div>
+            <div className="flex items-baseline justify-between border-t border-sable pt-4">
+              <dt className="text-[12px] font-medium uppercase tracking-[0.2em]">Total</dt>
+              <dd className="font-serif text-[30px] tabular-nums text-bordeaux-900">{formatPrice(subtotal)}</dd>
+            </div>
+          </dl>
+
+          {serverError && (
+            <p role="alert" className="mt-6 border-l-2 border-bordeaux-600 bg-bordeaux-50 px-4 py-3 text-[14px] text-bordeaux-700">
+              {serverError}
+            </p>
+          )}
+
+          <button type="submit" disabled={submitting} className="btn-primary mt-6 w-full">
+            {submitting ? (
+              <>
+                <LoaderCircle className="h-4 w-4 animate-spin" /> Validation…
+              </>
+            ) : (
+              "Confirmer la commande"
+            )}
+          </button>
+          <p className="mt-4 flex items-center justify-center gap-2 text-[12px] text-taupe">
+            <Lock className="h-3.5 w-3.5" strokeWidth={1.5} /> Vos données sont protégées et ne sont jamais partagées.
+          </p>
+        </div>
+      </aside>
+    </form>
+  );
+}
+
+type FieldProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  type?: string;
+  autoComplete?: string;
+  required?: boolean;
+  className?: string;
+};
+
+export function Field({ label, name, value, onChange, error, type = "text", autoComplete, required, className }: FieldProps) {
+  const errId = `${name}-error`;
+  return (
+    <div className={className}>
+      <label htmlFor={name} className="field-label">
+        {label} {required && <span className="text-bordeaux-600" aria-hidden>*</span>}
+      </label>
+      <input
+        id={name}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        autoComplete={autoComplete}
+        required={required}
+        aria-invalid={!!error}
+        aria-describedby={error ? errId : undefined}
+        className={`field ${error ? "border-bordeaux-600" : ""}`}
+      />
+      {error && (
+        <p id={errId} role="alert" className="mt-2 text-[13px] text-bordeaux-600">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
