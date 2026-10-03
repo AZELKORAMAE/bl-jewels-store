@@ -38,6 +38,8 @@ export function Footer({ collections }: { collections: Pick<Collection, "name" |
             <a href={STORE.mapsUrl} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center">
               <MapPin className="h-6 w-6 text-or-400" strokeWidth={1.3} />
               <span className="mt-3 text-[14px] leading-relaxed text-or-100/85 group-hover:text-or-300">
+                <span className="font-medium text-ivoire">{STORE.storeName}</span>
+                <br />
                 {STORE.addressLine1}
                 <br />
                 {STORE.addressLine2}

@@ -83,6 +83,8 @@ export default function MaisonPage() {
                 <li className="flex gap-4">
                   <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-or-400" strokeWidth={1.3} />
                   <span>
+                    <span className="font-medium text-ivoire">{STORE.storeName}</span>
+                    <br />
                     {STORE.addressLine1}
                     <br />
                     {STORE.addressLine2}

@@ -38,17 +38,20 @@ export const SOCIAL_LINKS: { label: string; href: string; icon: "instagram" | "f
 ];
 
 /** Boutique physique */
+const STORE_ADDRESS = "BL Jewels Store, Centre Commercial El Manjra, N°168 Bd El Fida, Casablanca 20250";
+
 export const STORE = {
   tagline: "Vente de bijoux en or 18 carats",
   instagramHandle: "@bl_jewels168",
-  addressLine1: "N°168, Centre Commercial El Manjra",
-  addressLine2: "Bd El Fida, Casablanca",
+  storeName: "BL Jewels Store",
+  addressLine1: "Centre Commercial El Manjra",
+  addressLine2: "N°168 Bd El Fida, Casablanca 20250",
   hours: "11h00 – 18h30",
   closed: "Fermé le vendredi",
   phone: "+212 6 55 77 79 34",
   phoneHref: "tel:+212655777934",
-  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Centre+Commercial+El+Manjra+Bd+El+Fida+Casablanca",
-  mapsEmbed: "https://www.google.com/maps?q=Centre+Commercial+El+Manjra+Bd+El+Fida+Casablanca&output=embed",
+  mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(STORE_ADDRESS)}`,
+  mapsEmbed: `https://www.google.com/maps?q=${encodeURIComponent(STORE_ADDRESS)}&output=embed`,
 };
 
 export function categoryLabel(slug: string) {
