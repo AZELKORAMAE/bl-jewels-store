@@ -5,21 +5,23 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const LENGTH = 6;
+// Supabase envoie 6 à 10 chiffres selon le réglage « Email OTP Length » du projet
+const MIN = 6;
+const MAX = 10;
 const RESEND_DELAY = 60;
 
-/** Saisie du code de confirmation reçu par e-mail (6 chiffres). */
+/** Saisie du code de confirmation reçu par e-mail. */
 export function OtpVerify({ email, next = "/compte", onBack }: { email: string; next?: string; onBack?: () => void }) {
   const router = useRouter();
-  const [digits, setDigits] = useState<string[]>(Array(LENGTH).fill(""));
+  const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(RESEND_DELAY);
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputs.current[0]?.focus();
+    input.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -28,49 +30,34 @@ export function OtpVerify({ email, next = "/compte", onBack }: { email: string; 
     return () => window.clearTimeout(id);
   }, [cooldown]);
 
-  const verify = async (code: string) => {
+  const verify = async (value: string) => {
+    if (value.length < MIN) {
+      setError(`Le code contient au moins ${MIN} chiffres.`);
+      return;
+    }
     setLoading(true);
     setError("");
+    setInfo("");
     const supabase = createClient();
-    let { error: err } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
-    if (err) ({ error: err } = await supabase.auth.verifyOtp({ email, token: code, type: "signup" }));
+    let { error: err } = await supabase.auth.verifyOtp({ email, token: value, type: "email" });
+    if (err) ({ error: err } = await supabase.auth.verifyOtp({ email, token: value, type: "signup" }));
     if (err) {
       setLoading(false);
-      setError(
-        /expired/i.test(err.message)
-          ? "Ce code a expiré. Demandez-en un nouveau ci-dessous."
-          : "Code incorrect. Vérifiez les chiffres reçus par e-mail."
-      );
-      setDigits(Array(LENGTH).fill(""));
-      inputs.current[0]?.focus();
+      // Supabase renvoie le même message pour un code faux ou expiré
+      setError("Code incorrect ou expiré. Vérifiez qu'il s'agit du dernier code reçu, en entier, ou demandez-en un nouveau.");
+      input.current?.select();
       return;
     }
     router.replace(next);
     router.refresh();
   };
 
-  const setAt = (index: number, value: string) => {
-    const clean = value.replace(/\D/g, "");
-    if (!clean) {
-      setDigits((d) => d.map((v, i) => (i === index ? "" : v)));
-      return;
-    }
-    // Collage d'un code complet ou saisie d'un chiffre
-    const next = [...digits];
-    clean
-      .slice(0, LENGTH - index)
-      .split("")
-      .forEach((ch, k) => (next[index + k] = ch));
-    setDigits(next);
-    const filled = Math.min(index + clean.length, LENGTH - 1);
-    inputs.current[filled]?.focus();
-    if (next.every(Boolean)) verify(next.join(""));
-  };
-
-  const onKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !digits[index] && index > 0) inputs.current[index - 1]?.focus();
-    if (e.key === "ArrowLeft" && index > 0) inputs.current[index - 1]?.focus();
-    if (e.key === "ArrowRight" && index < LENGTH - 1) inputs.current[index + 1]?.focus();
+  const onChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, MAX);
+    setCode(digits);
+    if (error) setError("");
+    // Collage ou remplissage automatique d'un code complet : validation immédiate
+    if (digits.length >= MIN && raw.replace(/\D/g, "").length - code.length > 1) verify(digits);
   };
 
   const resend = async () => {
@@ -81,8 +68,10 @@ export function OtpVerify({ email, next = "/compte", onBack }: { email: string; 
       setError(/rate|seconds/i.test(err.message) ? "Patientez quelques instants avant de redemander un code." : err.message);
       return;
     }
-    setInfo("Un nouveau code vient d'être envoyé.");
+    setCode("");
+    setInfo("Un nouveau code vient d'être envoyé. Les codes précédents ne sont plus valables.");
     setCooldown(RESEND_DELAY);
+    input.current?.focus();
   };
 
   return (
@@ -90,52 +79,51 @@ export function OtpVerify({ email, next = "/compte", onBack }: { email: string; 
       <MailCheck className="mx-auto h-12 w-12 text-or-600" strokeWidth={1} />
       <h2 className="mt-6 font-serif text-3xl text-bordeaux-900">Confirmez votre adresse</h2>
       <p className="mt-3 text-[15px] leading-relaxed text-taupe">
-        Saisissez le code à {LENGTH} chiffres envoyé à <strong className="font-medium text-encre">{email}</strong>.
+        Saisissez le code reçu par e-mail à <strong className="font-medium text-encre">{email}</strong>.
       </p>
 
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (digits.every(Boolean)) verify(digits.join(""));
+          verify(code);
         }}
         className="mt-8"
       >
-        <fieldset disabled={loading} className="flex justify-center gap-2 sm:gap-3">
-          <legend className="sr-only">Code de confirmation</legend>
-          {digits.map((d, i) => (
-            <input
-              key={i}
-              ref={(el) => {
-                inputs.current[i] = el;
-              }}
-              value={d}
-              onChange={(e) => setAt(i, e.target.value)}
-              onKeyDown={(e) => onKeyDown(i, e)}
-              onFocus={(e) => e.target.select()}
-              inputMode="numeric"
-              autoComplete={i === 0 ? "one-time-code" : "off"}
-              maxLength={LENGTH}
-              aria-label={`Chiffre ${i + 1}`}
-              aria-invalid={!!error}
-              className={`h-14 w-11 border bg-white text-center font-serif text-[28px] text-bordeaux-900 transition-colors focus:border-bordeaux-900 focus:outline-none sm:h-16 sm:w-12 ${
-                error ? "border-bordeaux-600" : d ? "border-or-500" : "border-sable"
-              }`}
-            />
-          ))}
-        </fieldset>
+        <label htmlFor="otp" className="sr-only">
+          Code de confirmation
+        </label>
+        <input
+          ref={input}
+          id="otp"
+          name="otp"
+          value={code}
+          onChange={(e) => onChange(e.target.value)}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          placeholder="••••••"
+          disabled={loading}
+          aria-invalid={!!error}
+          aria-describedby="otp-help"
+          className={`h-16 w-full border bg-white text-center font-serif text-[32px] tracking-[0.4em] text-bordeaux-900 placeholder:text-sable focus:border-bordeaux-900 focus:outline-none ${
+            error ? "border-bordeaux-600" : code.length >= MIN ? "border-or-500" : "border-sable"
+          }`}
+        />
+        <p id="otp-help" className="mt-2 text-[12px] text-taupe">
+          Copiez-collez le code complet tel qu&apos;il apparaît dans l&apos;e-mail.
+        </p>
 
         {error && (
-          <p role="alert" className="mt-5 text-[14px] text-bordeaux-600">
+          <p role="alert" className="mt-4 text-[14px] text-bordeaux-600">
             {error}
           </p>
         )}
         {info && !error && (
-          <p role="status" className="mt-5 text-[14px] text-emerald-700">
+          <p role="status" className="mt-4 text-[14px] text-emerald-700">
             {info}
           </p>
         )}
 
-        <button type="submit" disabled={loading || !digits.every(Boolean)} className="btn-primary mt-8 w-full">
+        <button type="submit" disabled={loading || code.length < MIN} className="btn-primary mt-6 w-full">
           {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : "Valider le code"}
         </button>
       </form>
