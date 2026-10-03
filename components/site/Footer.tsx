@@ -1,7 +1,8 @@
+import { Clock, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
-import { BRAND, CATEGORIES, SOCIAL_LINKS } from "@/lib/constants";
+import { BRAND, CATEGORIES, SOCIAL_LINKS, STORE } from "@/lib/constants";
 import type { Collection } from "@/lib/types";
 import { NewsletterForm } from "./NewsletterForm";
 
@@ -26,6 +27,45 @@ export function Footer({ collections }: { collections: Pick<Collection, "name" |
           </p>
           <div className="mt-8 flex w-full justify-center">
             <NewsletterForm />
+          </div>
+        </div>
+
+        {/* Boutique physique */}
+        <div className="border-b border-or-500/20 py-12">
+          <h2 className="eyebrow text-center text-or-400">Notre boutique à Casablanca</h2>
+          <p className="mt-3 text-center font-serif text-2xl font-light italic text-ivoire md:text-3xl">{STORE.tagline}</p>
+          <div className="mt-10 grid gap-8 text-center sm:grid-cols-3">
+            <a href={STORE.mapsUrl} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center">
+              <MapPin className="h-6 w-6 text-or-400" strokeWidth={1.3} />
+              <span className="mt-3 text-[14px] leading-relaxed text-or-100/85 group-hover:text-or-300">
+                {STORE.addressLine1}
+                <br />
+                {STORE.addressLine2}
+              </span>
+              <span className="mt-2 text-[11px] uppercase tracking-[0.18em] text-or-400 underline-offset-4 group-hover:underline">Itinéraire</span>
+            </a>
+            <div className="flex flex-col items-center">
+              <Clock className="h-6 w-6 text-or-400" strokeWidth={1.3} />
+              <span className="mt-3 text-[14px] leading-relaxed text-or-100/85">
+                Samedi – jeudi : {STORE.hours}
+                <br />
+                {STORE.closed}
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Phone className="h-6 w-6 text-or-400" strokeWidth={1.3} />
+              <a href={STORE.phoneHref} className="mt-3 text-[14px] tabular-nums text-or-100/85 hover:text-or-300">
+                {STORE.phone}
+              </a>
+              <a
+                href={SOCIAL_LINKS[0].href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex min-h-[36px] items-center gap-2 text-[14px] text-or-100/85 hover:text-or-300"
+              >
+                <InstagramIcon className="h-4 w-4 text-or-400" /> {STORE.instagramHandle}
+              </a>
+            </div>
           </div>
         </div>
 

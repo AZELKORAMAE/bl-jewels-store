@@ -102,10 +102,10 @@ export function Header({ collections }: { collections: NavCollection[] }) {
               <span className="hidden text-[11px] font-medium uppercase tracking-[0.2em] lg:inline">Rechercher</span>
             </button>
             <Link
-              href="/maison#services"
+              href="/maison#boutique"
               className="hidden text-[11px] font-medium uppercase tracking-[0.2em] text-bordeaux-900 transition-colors hover:text-or-700 xl:inline"
             >
-              Services
+              Notre boutique
             </Link>
           </div>
 

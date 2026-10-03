@@ -1,11 +1,12 @@
-import { Banknote, Gem, Gift, PenLine, RotateCcw, Truck } from "lucide-react";
+import { Banknote, Clock, Gem, Gift, MapPin, PenLine, Phone, RotateCcw, Truck } from "lucide-react";
+import { InstagramIcon } from "@/components/ui/SocialIcons";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ParallaxImage } from "@/components/home/ParallaxImage";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { EDITORIAL_IMAGES } from "@/lib/constants";
+import { EDITORIAL_IMAGES, SOCIAL_LINKS, STORE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "La Maison",
@@ -67,6 +68,58 @@ export default function MaisonPage() {
               </RevealItem>
             ))}
           </RevealGroup>
+        </div>
+      </section>
+
+      <section id="boutique" className="scroll-mt-32">
+        <div className="grid md:grid-cols-2">
+          <div className="flex items-center bg-bordeaux-900 px-6 py-16 md:px-16 lg:px-24">
+            <Reveal className="max-w-md">
+              <p className="eyebrow text-or-400">Visitez-nous</p>
+              <h2 className="display mt-5 text-[40px] text-ivoire md:text-[54px]">Notre boutique</h2>
+              <p className="mt-3 font-serif text-xl italic text-or-300">{STORE.tagline}</p>
+              <div className="my-8 h-px w-16 bg-or-500" />
+              <ul className="space-y-5 text-[15px] text-or-100/90">
+                <li className="flex gap-4">
+                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-or-400" strokeWidth={1.3} />
+                  <span>
+                    {STORE.addressLine1}
+                    <br />
+                    {STORE.addressLine2}
+                  </span>
+                </li>
+                <li className="flex gap-4">
+                  <Clock className="mt-0.5 h-5 w-5 shrink-0 text-or-400" strokeWidth={1.3} />
+                  <span>
+                    Samedi – jeudi : {STORE.hours}
+                    <br />
+                    {STORE.closed}
+                  </span>
+                </li>
+                <li className="flex gap-4">
+                  <Phone className="mt-0.5 h-5 w-5 shrink-0 text-or-400" strokeWidth={1.3} />
+                  <a href={STORE.phoneHref} className="tabular-nums hover:text-or-300">
+                    {STORE.phone}
+                  </a>
+                </li>
+              </ul>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <a href={STORE.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn-gold">
+                  Itinéraire
+                </a>
+                <a href={SOCIAL_LINKS[0].href} target="_blank" rel="noopener noreferrer" className="btn-outline-light">
+                  <InstagramIcon className="h-4 w-4" /> {STORE.instagramHandle}
+                </a>
+              </div>
+            </Reveal>
+          </div>
+          <iframe
+            src={STORE.mapsEmbed}
+            title="Plan d'accès à la boutique BL Jewels, Centre Commercial El Manjra, Casablanca"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="h-[380px] w-full border-0 grayscale-[35%] md:h-auto md:min-h-[560px]"
+          />
         </div>
       </section>
 

@@ -31,11 +31,25 @@ export const EDITORIAL_IMAGES = {
 
 /** Réseaux sociaux : renseignez vos liens pour les afficher dans le pied de page. */
 export const SOCIAL_LINKS: { label: string; href: string; icon: "instagram" | "facebook" | "tiktok" | "whatsapp" }[] = [
-  { label: "Instagram", href: "", icon: "instagram" },
+  { label: "Instagram", href: "https://www.instagram.com/bl_jewels168/", icon: "instagram" },
   { label: "Facebook", href: "", icon: "facebook" },
   { label: "TikTok", href: "", icon: "tiktok" },
-  { label: "WhatsApp", href: "", icon: "whatsapp" },
+  { label: "WhatsApp", href: "https://wa.me/212655777934", icon: "whatsapp" },
 ];
+
+/** Boutique physique */
+export const STORE = {
+  tagline: "Vente de bijoux en or 18 carats",
+  instagramHandle: "@bl_jewels168",
+  addressLine1: "N°168, Centre Commercial El Manjra",
+  addressLine2: "Bd El Fida, Casablanca",
+  hours: "11h00 – 18h30",
+  closed: "Fermé le vendredi",
+  phone: "+212 6 55 77 79 34",
+  phoneHref: "tel:+212655777934",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Centre+Commercial+El+Manjra+Bd+El+Fida+Casablanca",
+  mapsEmbed: "https://www.google.com/maps?q=Centre+Commercial+El+Manjra+Bd+El+Fida+Casablanca&output=embed",
+};
 
 export function categoryLabel(slug: string) {
   return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
