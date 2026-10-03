@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { OtpVerify } from "./OtpVerify";
 import { PasswordInput } from "./PasswordInput";
 
 /** Formulaire de connexion. `adminOnly` vérifie le rôle avant d'ouvrir l'espace admin. */
@@ -15,6 +16,11 @@ export function LoginForm({ next = "/compte", adminOnly = false }: { next?: stri
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [needsCode, setNeedsCode] = useState(false);
+
+  if (needsCode) {
+    return <OtpVerify email={email.trim()} next={next.startsWith("/") ? next : "/compte"} onBack={() => setNeedsCode(false)} />;
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +38,13 @@ export function LoginForm({ next = "/compte", adminOnly = false }: { next?: stri
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (authError || !data.user) {
       setLoading(false);
-      setError(
-        authError?.message === "Email not confirmed"
-          ? "Confirmez d'abord votre adresse e-mail grâce au lien reçu."
-          : "E-mail ou mot de passe incorrect."
-      );
+      if (authError?.code === "email_not_confirmed" || authError?.message === "Email not confirmed") {
+        // Compte non confirmé : on renvoie un code et on affiche la saisie
+        await supabase.auth.resend({ type: "signup", email: email.trim() });
+        setNeedsCode(true);
+        return;
+      }
+      setError("E-mail ou mot de passe incorrect.");
       return;
     }
     if (adminOnly) {

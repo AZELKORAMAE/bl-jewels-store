@@ -1,12 +1,13 @@
 "use client";
 
-import { CircleCheck, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Field } from "@/components/shop/Checkout";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { OtpVerify } from "./OtpVerify";
 import { PasswordInput } from "./PasswordInput";
 
 type Errors = Partial<Record<"full_name" | "email" | "phone" | "password" | "confirm" | "form", string>>;
@@ -53,6 +54,11 @@ export function SignupForm() {
       });
       return;
     }
+    // Supabase ne renvoie pas d'erreur pour une adresse déjà confirmée : l'identité est simplement vide
+    if (data.user && data.user.identities?.length === 0) {
+      setErrors({ form: "Un compte existe déjà avec cette adresse. Connectez-vous." });
+      return;
+    }
     if (data.session) {
       router.replace("/compte");
       router.refresh();
@@ -62,19 +68,7 @@ export function SignupForm() {
   };
 
   if (sent) {
-    return (
-      <div className="text-center">
-        <CircleCheck className="mx-auto h-12 w-12 text-or-600" strokeWidth={1} />
-        <h2 className="mt-6 font-serif text-3xl text-bordeaux-900">Vérifiez votre boîte mail</h2>
-        <p className="mt-3 text-[15px] leading-relaxed text-taupe">
-          Un lien de confirmation a été envoyé à <strong className="font-medium text-encre">{form.email}</strong>. Cliquez dessus pour activer
-          votre compte.
-        </p>
-        <Link href="/connexion" className="btn-outline mt-8">
-          Aller à la connexion
-        </Link>
-      </div>
-    );
+    return <OtpVerify email={form.email.trim()} onBack={() => setSent(false)} />;
   }
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [key]: e.target.value }));

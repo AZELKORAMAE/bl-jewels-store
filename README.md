@@ -52,7 +52,21 @@ Dans **Authentication → URL Configuration** :
 - **Site URL** : l'adresse de votre site (par ex. `https://bljewels.vercel.app`)
 - **Redirect URLs** : ajoutez `https://votre-domaine/auth/callback` et `http://localhost:3000/auth/callback`
 
-Le service d'e-mail gratuit de Supabase n'envoie que quelques e-mails par heure. Pour l'inscription des clients, branchez un SMTP (Authentication → SMTP), ou désactivez « Confirm email ».
+### 3 bis. Confirmation par code envoyé depuis bl.jewels.support@gmail.com
+À l'inscription, le client reçoit un **code à 6 chiffres** à saisir sur le site (au lieu d'un lien).
+
+1. **Mot de passe d'application Gmail** (sur le compte bl.jewels.support@gmail.com) : activez la validation en deux étapes (myaccount.google.com → Sécurité), puis créez un mot de passe d'application sur myaccount.google.com/apppasswords. Vous obtenez 16 lettres.
+2. **Supabase → Authentication → Emails → SMTP Settings** : activez *Enable Custom SMTP* et renseignez :
+   - Sender email : `bl.jewels.support@gmail.com`
+   - Sender name : `BL Jewels`
+   - Host : `smtp.gmail.com`
+   - Port : `465`
+   - Username : `bl.jewels.support@gmail.com`
+   - Password : le mot de passe d'application (16 lettres, sans espaces)
+3. **Supabase → Authentication → Emails → Templates → Confirm signup** :
+   - Subject : `Votre code de confirmation BL Jewels : {{ .Token }}`
+   - Body : collez le contenu de `supabase/email-templates/confirmation-code.html`
+4. **Authentication → Sign In / Providers → Email** : laissez *Confirm email* activé. La longueur du code (*Email OTP Length*) doit rester à 6.
 
 ### 4. Déployer sur Vercel
 1. Publiez le dossier sur GitHub, puis importez le dépôt sur [vercel.com/new](https://vercel.com/new).
