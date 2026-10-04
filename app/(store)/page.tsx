@@ -8,7 +8,7 @@ import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { EDITORIAL_IMAGES } from "@/lib/constants";
-import { getCollections, getProducts } from "@/lib/data";
+import { getBestSellers, getCollections, getProducts } from "@/lib/data";
 import { cn } from "@/lib/cn";
 
 export const revalidate = 60;
@@ -21,8 +21,8 @@ const SERVICES = [
 ];
 
 export default async function HomePage() {
-  const [featured, newest, collections] = await Promise.all([
-    getProducts({ featured: true, limit: 12 }),
+  const [bestSellers, newest, collections] = await Promise.all([
+    getBestSellers(10),
     getProducts({ sort: "nouveautes", limit: 12 }),
     getCollections(),
   ]);
@@ -60,15 +60,15 @@ export default async function HomePage() {
     <>
       <Hero slides={slides} />
 
-      {/* Incontournables */}
+      {/* Les plus vendus (classement automatique selon les commandes) */}
       <section className="container py-20 md:py-28">
         <SectionHeading
-          eyebrow="Les incontournables"
-          title="Des créations iconiques"
-          description="Nos pièces les plus aimées, façonnées avec exigence pour traverser le temps."
+          eyebrow="Les plus vendus"
+          title="Les préférées de nos clientes"
+          description="Les créations les plus choisies, façonnées avec exigence pour traverser le temps."
         />
         <Reveal className="mt-14" delay={0.1}>
-          <ProductCarousel products={featured} label="Créations iconiques" />
+          <ProductCarousel products={bestSellers} label="Les plus vendus" />
         </Reveal>
       </section>
 
