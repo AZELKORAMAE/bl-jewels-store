@@ -3,18 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { BRAND, SOCIAL_LINKS, STORE } from "@/lib/constants";
-import type { Category, Collection } from "@/lib/types";
+import type { Collection } from "@/lib/types";
 import { NewsletterForm } from "./NewsletterForm";
 
 const ICONS = { instagram: InstagramIcon, facebook: FacebookIcon, tiktok: TikTokIcon, whatsapp: WhatsAppIcon };
 
-export function Footer({
-  collections,
-  categories,
-}: {
-  collections: Pick<Collection, "name" | "slug">[];
-  categories: Pick<Category, "name" | "slug">[];
-}) {
+export function Footer({ collections }: { collections: Pick<Collection, "name" | "slug">[] }) {
   const socials = SOCIAL_LINKS.filter((s) => s.href);
 
   return (
@@ -78,13 +72,11 @@ export function Footer({
         </div>
 
         <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
-          <FooterCol title="Joaillerie">
-            {categories.map((c) => (
-              <FooterLink key={c.slug} href={`/boutique?categorie=${c.slug}`}>
-                {c.name}
-              </FooterLink>
-            ))}
+          <FooterCol title="La boutique">
+            <FooterLink href="/boutique">Toute la joaillerie</FooterLink>
             <FooterLink href="/boutique?tri=nouveautes">Nouveautés</FooterLink>
+            <FooterLink href="/boutique?prix=cadeaux">Idées cadeaux</FooterLink>
+            <FooterLink href="/collections">Toutes les collections</FooterLink>
           </FooterCol>
           <FooterCol title="Collections">
             {collections.slice(0, 6).map((c) => (

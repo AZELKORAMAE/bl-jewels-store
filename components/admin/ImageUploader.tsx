@@ -12,7 +12,7 @@ type Props = {
   name: string;
   initial: string[];
   multiple?: boolean;
-  folder: "produits" | "collections" | "categories";
+  folder: "produits" | "collections";
   /** "json" : tableau JSON dans un seul champ ; "single" : l'URL seule */
   format?: "json" | "single";
 };

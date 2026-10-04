@@ -8,13 +8,6 @@ export const BRAND = {
 
 const U = "https://images.unsplash.com/";
 
-export const CATEGORIES = [
-  { slug: "colliers", label: "Colliers & Pendentifs", short: "Colliers", image: `${U}photo-1611652022419-a9419f74343d` },
-  { slug: "boucles-oreilles", label: "Boucles d'oreilles", short: "Boucles d'oreilles", image: `${U}photo-1652766540048-de0a878a3266` },
-  { slug: "bracelets", label: "Bracelets", short: "Bracelets", image: `${U}photo-1619893454156-26a705ac9eb5` },
-  { slug: "bagues", label: "Bagues", short: "Bagues", image: `${U}photo-1588814096146-e7c56156f9f8` },
-] as const;
-
 /** Visuels éditoriaux de la page d'accueil (remplaçables par vos propres photos). */
 export const EDITORIAL_IMAGES = {
   hero: [

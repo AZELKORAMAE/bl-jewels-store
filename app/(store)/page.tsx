@@ -8,7 +8,7 @@ import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { EDITORIAL_IMAGES } from "@/lib/constants";
-import { getCategories, getCollections, getProducts } from "@/lib/data";
+import { getCollections, getProducts } from "@/lib/data";
 import { cn } from "@/lib/cn";
 
 export const revalidate = 60;
@@ -21,15 +21,13 @@ const SERVICES = [
 ];
 
 export default async function HomePage() {
-  const [featured, newest, collections, categories] = await Promise.all([
+  const [featured, newest, collections] = await Promise.all([
     getProducts({ featured: true, limit: 12 }),
     getProducts({ sort: "nouveautes", limit: 12 }),
     getCollections(),
-    getCategories(),
   ]);
 
   const pearls = collections.find((c) => c.slug === "perles-de-lune") ?? collections[0];
-  const mosaic = collections.filter((c) => c.is_featured).slice(0, 5);
 
   const slides = [
     {
@@ -74,20 +72,20 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* Catégories (gérées depuis Admin → Catégories) */}
-      {categories.length > 0 && (
+      {/* Collections (gérées depuis Admin → Collections) */}
+      {collections.length > 0 && (
         <section className="bg-ivoire py-20 md:py-28">
           <div className="container">
-            <SectionHeading eyebrow="Explorer" title="Acheter par catégorie" />
+            <SectionHeading eyebrow="Explorer" title="Acheter par collection" />
             <RevealGroup
               className={cn(
                 "mx-auto mt-14 grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6",
-                categories.length >= 4 ? "lg:grid-cols-4" : categories.length === 3 ? "lg:grid-cols-3" : "max-w-3xl"
+                collections.length >= 4 ? "lg:grid-cols-4" : collections.length === 3 ? "lg:grid-cols-3" : "max-w-3xl"
               )}
             >
-              {categories.map((c) => (
+              {collections.map((c) => (
                 <RevealItem key={c.id}>
-                  <Link href={`/boutique?categorie=${c.slug}`} className="group block text-center">
+                  <Link href={`/collections/${c.slug}`} className="group block text-center">
                     <div className="relative aspect-[3/4] overflow-hidden bg-champagne">
                       {c.image_url ? (
                         <Image
@@ -146,37 +144,6 @@ export default async function HomePage() {
       </section>
 
       <Marquee />
-
-      {/* Mosaïque des collections */}
-      {mosaic.length > 0 && (
-        <section className="container py-20 md:py-28">
-          <SectionHeading eyebrow="Univers" title="Nos collections" description="Cinq univers, une même exigence : la beauté qui dure." />
-          <RevealGroup className="mt-14 grid auto-rows-[260px] grid-cols-2 gap-3 md:auto-rows-[300px] md:grid-cols-4 md:gap-5">
-            {mosaic.map((c, i) => (
-              <RevealItem key={c.id} className={cn(i === 0 && "col-span-2 row-span-2", i >= 3 && "max-md:col-span-2")}>
-                <Link href={`/collections/${c.slug}`} className="group relative block h-full overflow-hidden bg-bordeaux-900">
-                  {c.image_url && (
-                    <Image
-                      src={c.image_url}
-                      alt={c.name}
-                      fill
-                      sizes={i === 0 ? "(min-width:768px) 50vw, 100vw" : "(min-width:768px) 25vw, 50vw"}
-                      className="object-cover opacity-90 transition-all duration-[1.2s] ease-luxe group-hover:scale-[1.06] group-hover:opacity-100"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-bordeaux-950/80 via-bordeaux-950/10 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
-                    <h3 className={cn("font-serif text-ivoire", i === 0 ? "text-[34px] md:text-[48px]" : "text-[22px] md:text-[26px]")}>{c.name}</h3>
-                    <span className="mt-2 inline-block translate-y-2 text-[11px] font-medium uppercase tracking-[0.2em] text-or-300 opacity-0 transition-all duration-500 ease-luxe group-hover:translate-y-0 group-hover:opacity-100 max-md:translate-y-0 max-md:opacity-100">
-                      Découvrir
-                    </span>
-                  </div>
-                </Link>
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </section>
-      )}
 
       {/* Écrin signature */}
       <section className="bg-champagne">

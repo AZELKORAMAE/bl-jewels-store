@@ -3,26 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { ActiveSwitch } from "@/components/admin/ActiveSwitch";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
-import { categoryName, getCategories } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { getAdmin } from "@/lib/supabase/server";
 import type { Product } from "@/lib/types";
 
 export const metadata = { title: "Produits" };
 
-type SP = Promise<{ q?: string; categorie?: string; ok?: string }>;
+type SP = Promise<{ q?: string; collection?: string; ok?: string }>;
 
 export default async function AdminProductsPage({ searchParams }: { searchParams: SP }) {
-  const { q, categorie, ok } = await searchParams;
+  const { q, collection, ok } = await searchParams;
   const { supabase } = await getAdmin();
 
   let req = supabase.from("products").select("*, collection:collections(name, slug)").order("created_at", { ascending: false });
-  if (categorie) req = req.eq("category", categorie);
+  if (collection === "aucune") req = req.is("collection_id", null);
+  else if (collection) req = req.eq("collection_id", collection);
   if (q) {
     const safe = q.replace(/[,()*%\\]/g, " ").trim();
     if (safe) req = req.ilike("name", `%${safe}%`);
   }
-  const [{ data }, categories] = await Promise.all([req, getCategories()]);
+  const [{ data }, { data: collections }] = await Promise.all([req, supabase.from("collections").select("id, name").order("sort_order")]);
   const products = (data ?? []) as Product[];
 
   return (
@@ -47,16 +47,17 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           </label>
           <input id="q" name="q" defaultValue={q} placeholder="Rechercher un produit…" className="field rounded-md pl-9" />
         </div>
-        <label htmlFor="categorie" className="sr-only">
-          Catégorie
+        <label htmlFor="collection" className="sr-only">
+          Collection
         </label>
-        <select id="categorie" name="categorie" defaultValue={categorie ?? ""} className="field cursor-pointer rounded-md sm:w-56">
-          <option value="">Toutes les catégories</option>
-          {categories.map((c) => (
-            <option key={c.slug} value={c.slug}>
+        <select id="collection" name="collection" defaultValue={collection ?? ""} className="field cursor-pointer rounded-md sm:w-56">
+          <option value="">Toutes les collections</option>
+          {(collections ?? []).map((c) => (
+            <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
+          <option value="aucune">Sans collection</option>
         </select>
         <button type="submit" className="btn-outline rounded-md">
           Filtrer
@@ -75,7 +76,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             <thead className="bg-ivoire text-[11px] uppercase tracking-[0.12em] text-taupe">
               <tr>
                 <th className="px-5 py-3 font-medium">Produit</th>
-                <th className="px-5 py-3 font-medium">Catégorie</th>
+                <th className="px-5 py-3 font-medium">Collection</th>
                 <th className="px-5 py-3 text-right font-medium">Prix</th>
                 <th className="px-5 py-3 text-right font-medium">Stock</th>
                 <th className="px-5 py-3 text-center font-medium">Visible</th>
@@ -94,11 +95,11 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                       </span>
                       <span>
                         <span className="block font-medium text-encre hover:underline">{p.name}</span>
-                        <span className="text-[12px] text-taupe">{p.collection?.name ?? "Sans collection"}</span>
+                        <span className="text-[12px] text-taupe">{p.material ?? ""}</span>
                       </span>
                     </Link>
                   </td>
-                  <td className="px-5 py-3 text-taupe">{categoryName(categories, p.category)}</td>
+                  <td className="px-5 py-3 text-taupe">{p.collection?.name ?? <span className="text-bordeaux-600">Sans collection</span>}</td>
                   <td className="px-5 py-3 text-right tabular-nums">{formatPrice(p.price)}</td>
                   <td className="px-5 py-3 text-right tabular-nums">
                     <span className={p.stock <= 0 ? "font-medium text-bordeaux-600" : p.stock <= 2 ? "font-medium text-or-700" : ""}>

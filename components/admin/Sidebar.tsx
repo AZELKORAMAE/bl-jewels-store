@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, ExternalLink, Layers, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, Tags, Users, X } from "lucide-react";
+import { Bell, ExternalLink, Layers, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,7 +14,6 @@ const LINKS = [
   { href: "/admin/commandes", label: "Commandes", icon: ShoppingCart, badge: "pending" as const },
   { href: "/admin/produits", label: "Produits", icon: Package },
   { href: "/admin/collections", label: "Collections", icon: Layers },
-  { href: "/admin/categories", label: "Catégories", icon: Tags },
   { href: "/admin/clients", label: "Clients", icon: Users },
   { href: "/admin/notifications", label: "Notifications", icon: Bell, badge: "unread" as const },
 ];

@@ -2,17 +2,13 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { PageHeader } from "@/components/admin/ui";
-import { getCategories } from "@/lib/data";
 import { getAdmin } from "@/lib/supabase/server";
 
 export const metadata = { title: "Nouveau produit" };
 
 export default async function NewProductPage() {
   const { supabase } = await getAdmin();
-  const [{ data: collections }, categories] = await Promise.all([
-    supabase.from("collections").select("id, name").order("sort_order"),
-    getCategories(),
-  ]);
+  const { data: collections } = await supabase.from("collections").select("id, name").order("sort_order");
 
   return (
     <>
@@ -20,7 +16,7 @@ export default async function NewProductPage() {
         <ArrowLeft className="h-4 w-4" /> Produits
       </Link>
       <PageHeader title="Nouveau produit" description="Ajoutez une création à votre catalogue." />
-      <ProductForm collections={collections ?? []} categories={categories} />
+      <ProductForm collections={collections ?? []} />
     </>
   );
 }

@@ -122,58 +122,6 @@ export async function deleteCollection(id: string) {
   return { ok: true, message: "Collection supprimée." };
 }
 
-// --------------------------------------------------------------- Catégories
-export async function saveCategory(_: ActionState, fd: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
-  const id = str(fd, "id");
-  const name = str(fd, "name");
-  if (!name) return { ok: false, message: "Le nom est obligatoire.", fieldErrors: { name: "Le nom est obligatoire." } };
-
-  const payload = {
-    name,
-    slug: slugify(str(fd, "slug") || name),
-    image_url: str(fd, "image_url") || null,
-    sort_order: num(fd, "sort_order") ?? 0,
-  };
-
-  const { error } = id ? await supabase.from("categories").update(payload).eq("id", id) : await supabase.from("categories").insert(payload);
-  if (error) {
-    if (error.code === "23505") return { ok: false, message: "Ce lien (slug) est déjà utilisé.", fieldErrors: { slug: "Choisissez un autre lien." } };
-    if (error.code === "42P01" || /categories/.test(error.message) && /exist/.test(error.message))
-      return { ok: false, message: "La table des catégories n'existe pas encore : exécutez supabase/categories.sql dans Supabase." };
-    return { ok: false, message: error.message };
-  }
-  refreshStore();
-  revalidatePath("/admin/categories");
-  redirect("/admin/categories?ok=1");
-}
-
-/** Monte ou descend une catégorie d'un cran (les ordres sont renumérotés 1, 2, 3…). */
-export async function moveCategory(id: string, direction: -1 | 1) {
-  const supabase = await requireAdmin();
-  const { data } = await supabase.from("categories").select("id").order("sort_order").order("name");
-  const list = (data ?? []).map((c) => c.id as string);
-  const i = list.indexOf(id);
-  const j = i + direction;
-  if (i < 0 || j < 0 || j >= list.length) return;
-  [list[i], list[j]] = [list[j], list[i]];
-  await Promise.all(list.map((cid, index) => supabase.from("categories").update({ sort_order: index + 1 }).eq("id", cid)));
-  refreshStore();
-  revalidatePath("/admin/categories");
-}
-
-export async function deleteCategory(id: string) {
-  const supabase = await requireAdmin();
-  const { error } = await supabase.from("categories").delete().eq("id", id);
-  if (error) {
-    if (error.code === "23503") return { ok: false, message: "Cette catégorie contient encore des produits : déplacez-les ou supprimez-les d'abord." };
-    return { ok: false, message: error.message };
-  }
-  refreshStore();
-  revalidatePath("/admin/categories");
-  return { ok: true, message: "Catégorie supprimée." };
-}
-
 // ---------------------------------------------------------------- Commandes
 const STATUSES: OrderStatus[] = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 

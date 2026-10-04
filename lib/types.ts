@@ -9,14 +9,6 @@ export type Collection = {
   created_at?: string;
 };
 
-export type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  image_url: string | null;
-  sort_order: number;
-};
-
 export type Product = {
   id: string;
   name: string;

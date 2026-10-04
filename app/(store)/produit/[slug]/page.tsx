@@ -9,7 +9,7 @@ import { AccordionItem } from "@/components/ui/Accordion";
 import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { categoryName, getCategories, getProduct, getProducts } from "@/lib/data";
+import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
 export const revalidate = 60;
@@ -32,8 +32,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const categories = await getCategories();
-  let related = await getProducts({ category: product.category, excludeId: product.id, limit: 10 });
+  let related = product.collection_id ? await getProducts({ collectionId: product.collection_id, excludeId: product.id, limit: 10 }) : [];
   if (related.length < 4) related = [...related, ...(await getProducts({ featured: true, excludeId: product.id, limit: 8 }))].filter((p, i, a) => a.findIndex((x) => x.id === p.id) === i);
 
   const jsonLd = {
@@ -57,7 +56,9 @@ export default async function ProductPage({ params }: { params: Params }) {
       <div className="container pt-6 md:pt-10">
         <Breadcrumbs
           items={[
-            { label: categoryName(categories, product.category), href: `/boutique?categorie=${product.category}` },
+            product.collection
+              ? { label: product.collection.name, href: `/collections/${product.collection.slug}` }
+              : { label: "Joaillerie", href: "/boutique" },
             { label: product.name },
           ]}
         />

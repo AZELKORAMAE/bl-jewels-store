@@ -7,40 +7,40 @@ import { SortSelect } from "@/components/shop/SortSelect";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
 import { GIFT_PRICE_LIMIT } from "@/lib/constants";
-import { categoryName, getCategories, getProducts } from "@/lib/data";
+import { getCollections, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
-type SearchParams = Promise<{ categorie?: string; tri?: string; q?: string; prix?: string }>;
+type SearchParams = Promise<{ collection?: string; tri?: string; q?: string; prix?: string }>;
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
-  const { categorie, q } = await searchParams;
+  const { collection, q } = await searchParams;
   if (q) return { title: `Recherche « ${q} »` };
-  return { title: categorie ? categoryName(await getCategories(), categorie) : "Toute la joaillerie" };
+  const current = collection ? (await getCollections()).find((c) => c.slug === collection) : null;
+  return { title: current?.name ?? "Toute la joaillerie" };
 }
 
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
-  const { categorie, tri, q, prix } = await searchParams;
+  const { collection, tri, q, prix } = await searchParams;
   const gifts = prix === "cadeaux";
-  const [products, categories] = await Promise.all([
-    getProducts({
-      category: categorie,
-      sort: tri,
-      q,
-      maxPrice: gifts ? GIFT_PRICE_LIMIT : undefined,
-    }),
-    getCategories(),
-  ]);
+  const collections = await getCollections();
+  const current = collection ? collections.find((c) => c.slug === collection) ?? null : null;
+  const products = await getProducts({
+    collectionId: current?.id,
+    sort: tri,
+    q,
+    maxPrice: gifts ? GIFT_PRICE_LIMIT : undefined,
+  });
 
-  const title = q ? `« ${q} »` : gifts ? "Idées cadeaux" : categorie ? categoryName(categories, categorie) : "Toute la joaillerie";
+  const title = q ? `« ${q} »` : gifts ? "Idées cadeaux" : current ? current.name : "Toute la joaillerie";
   const intro = q
     ? `${products.length} création${products.length > 1 ? "s" : ""} correspond${products.length > 1 ? "ent" : ""} à votre recherche.`
     : gifts
       ? `Des attentions précieuses à moins de ${formatPrice(GIFT_PRICE_LIMIT)}, livrées dans notre écrin signature.`
-      : "Bagues, colliers, bracelets et boucles d'oreilles : des créations façonnées avec exigence dans nos ateliers.";
+      : current?.description || "Des créations en or façonnées avec exigence, pour sublimer chaque instant.";
 
   const chipHref = (slug?: string) => {
     const p = new URLSearchParams();
-    if (slug) p.set("categorie", slug);
+    if (slug) p.set("collection", slug);
     if (tri) p.set("tri", tri);
     if (gifts) p.set("prix", "cadeaux");
     return `/boutique${p.size ? `?${p}` : ""}`;
@@ -50,7 +50,12 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     <>
       <section className="border-b border-sable bg-ivoire">
         <div className="container py-10 md:py-16">
-          <Breadcrumbs items={[{ label: q ? "Recherche" : "Joaillerie", href: q || categorie || gifts ? "/boutique" : undefined }, ...(categorie || gifts || q ? [{ label: q ? q : title }] : [])]} />
+          <Breadcrumbs
+            items={[
+              { label: q ? "Recherche" : "Joaillerie", href: q || current || gifts ? "/boutique" : undefined },
+              ...(current || gifts || q ? [{ label: q ? q : title }] : []),
+            ]}
+          />
           <Reveal className="mx-auto mt-8 max-w-2xl text-center">
             {q && <p className="eyebrow mb-4 text-or-700">Résultats pour</p>}
             <h1 className="display text-[44px] text-bordeaux-900 md:text-[64px]">{title}</h1>
@@ -63,13 +68,13 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         <div className="container flex items-center justify-between gap-6">
           <ul className="scrollbar-none -mx-1 flex flex-1 items-center gap-1 overflow-x-auto">
             <li>
-              <FilterChip href={chipHref()} active={!categorie}>
+              <FilterChip href={chipHref()} active={!current}>
                 Tout
               </FilterChip>
             </li>
-            {categories.map((c) => (
+            {collections.map((c) => (
               <li key={c.slug}>
-                <FilterChip href={chipHref(c.slug)} active={categorie === c.slug}>
+                <FilterChip href={chipHref(c.slug)} active={current?.slug === c.slug}>
                   {c.name}
                 </FilterChip>
               </li>
