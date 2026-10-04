@@ -89,28 +89,18 @@ export async function toggleProductActive(id: string, active: boolean) {
 }
 
 // -------------------------------------------------------- Page d'accueil
-/** Monte ou descend un produit dans « Les plus vendus » ou « Nouveautés » (ordres renumérotés 1, 2, 3…). */
-export async function moveHomeRank(section: "featured" | "new", id: string, direction: -1 | 1) {
+/** Enregistre l'ordre complet d'une section après un glisser-déposer (1, 2, 3…). */
+export async function saveHomeOrder(section: "featured" | "new", ids: string[]) {
   const supabase = await requireAdmin();
-  const flag = section === "featured" ? "is_featured" : "is_new";
   const rank = section === "featured" ? "featured_rank" : "new_rank";
-  const { data, error } = await supabase
-    .from("products")
-    .select("id")
-    .eq(flag, true)
-    .eq("is_active", true)
-    .order(rank, { ascending: true, nullsFirst: false })
-    .order("created_at", { ascending: false });
-  if (error) return { ok: false, message: "Exécutez d'abord supabase/ordre-accueil.sql dans Supabase." };
-  const list = (data ?? []).map((p) => p.id as string);
-  const i = list.indexOf(id);
-  const j = i + direction;
-  if (i < 0 || j < 0 || j >= list.length) return { ok: true, message: "" };
-  [list[i], list[j]] = [list[j], list[i]];
-  await Promise.all(list.map((pid, index) => supabase.from("products").update({ [rank]: index + 1 }).eq("id", pid)));
+  const results = await Promise.all(
+    ids.slice(0, 500).map((pid, index) => supabase.from("products").update({ [rank]: index + 1 }).eq("id", pid))
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { ok: false, message: failed.error.message };
   refreshStore();
   revalidatePath("/admin/accueil");
-  return { ok: true, message: "" };
+  return { ok: true, message: "Ordre enregistré" };
 }
 
 // ------------------------------------------------------------- Collections
