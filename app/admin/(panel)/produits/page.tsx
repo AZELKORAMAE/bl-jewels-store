@@ -1,4 +1,4 @@
-import { CircleCheck, Pencil, Plus, Search } from "lucide-react";
+import { CircleCheck, Flame, Pencil, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ActiveSwitch } from "@/components/admin/ActiveSwitch";
@@ -95,7 +95,10 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                         {p.images[0] && <Image src={p.images[0]} alt="" fill sizes="48px" className="object-cover mix-blend-multiply" />}
                       </span>
                       <span>
-                        <span className="block font-medium text-encre hover:underline">{p.name}</span>
+                        <span className="flex items-center gap-1.5 font-medium text-encre hover:underline">
+                          {p.name}
+                          {p.is_featured && <Flame className="h-4 w-4 shrink-0 text-or-600" strokeWidth={2} aria-label="Meilleure vente" />}
+                        </span>
                         <span className="text-[12px] text-taupe">{p.material ?? ""}</span>
                       </span>
                     </Link>

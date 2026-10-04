@@ -60,7 +60,8 @@ export default async function HomePage() {
     <>
       <Hero slides={slides} />
 
-      {/* Les plus vendus (classement automatique selon les commandes) */}
+      {/* Les plus vendus : produits cochés « Meilleure vente » dans l'admin */}
+      {bestSellers.length > 0 && (
       <section className="container py-20 md:py-28">
         <SectionHeading
           eyebrow="Les plus vendus"
@@ -71,6 +72,7 @@ export default async function HomePage() {
           <ProductCarousel products={bestSellers} label="Les plus vendus" />
         </Reveal>
       </section>
+      )}
 
       {/* Collections (gérées depuis Admin → Collections) */}
       {collections.length > 0 && (

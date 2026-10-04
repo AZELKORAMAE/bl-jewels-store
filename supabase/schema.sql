@@ -393,25 +393,3 @@ create policy "images_admin_update" on storage.objects
 drop policy if exists "images_admin_delete" on storage.objects;
 create policy "images_admin_delete" on storage.objects
   for delete to authenticated using (bucket_id = 'images' and public.is_admin());
-
--- ---------------------------------------------------------------------
---  CLASSEMENT DES MEILLEURES VENTES (accueil)
--- ---------------------------------------------------------------------
-create or replace function public.best_sellers(p_limit int default 12)
-returns table (product_id uuid, sold bigint)
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select i.product_id, sum(i.quantity)::bigint as sold
-  from public.order_items i
-  join public.orders o on o.id = i.order_id
-  join public.products p on p.id = i.product_id
-  where o.status <> 'cancelled' and p.is_active
-  group by i.product_id
-  order by sold desc
-  limit greatest(1, least(p_limit, 50));
-$$;
-
-grant execute on function public.best_sellers(int) to anon, authenticated;

@@ -116,36 +116,9 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
   return (data ?? []).map(normalizeProduct);
 }
 
-/**
- * Les plus vendus (commandes non annulées), complétés par les incontournables
- * puis les nouveautés pour toujours remplir la sélection.
- */
-export async function getBestSellers(limit = 10): Promise<Product[]> {
-  let ranked: Product[] = [];
-
-  if (isSupabaseConfigured) {
-    const supabase = createPublicClient();
-    const { data: sales } = await supabase.rpc("best_sellers", { p_limit: limit });
-    const ids = ((sales ?? []) as { product_id: string }[]).map((s) => s.product_id);
-    if (ids.length) {
-      const { data } = await supabase.from("products").select(PRODUCT_SELECT).in("id", ids).eq("is_active", true);
-      const byId = new Map((data ?? []).map((row) => [row.id as string, normalizeProduct(row)]));
-      ranked = ids.map((id) => byId.get(id)).filter((p): p is Product => Boolean(p));
-    }
-  }
-
-  if (ranked.length < limit) {
-    const [featured, newest] = await Promise.all([getProducts({ featured: true, limit }), getProducts({ sort: "nouveautes", limit })]);
-    const seen = new Set(ranked.map((p) => p.id));
-    for (const p of [...featured, ...newest]) {
-      if (ranked.length >= limit) break;
-      if (!seen.has(p.id)) {
-        seen.add(p.id);
-        ranked.push(p);
-      }
-    }
-  }
-  return ranked;
+/** Produits cochés « Meilleure vente » dans l'admin (flamme + section de l'accueil). */
+export async function getBestSellers(limit = 12): Promise<Product[]> {
+  return getProducts({ featured: true, limit, sort: "nouveautes" });
 }
 
 export async function getProduct(slug: string): Promise<Product | null> {

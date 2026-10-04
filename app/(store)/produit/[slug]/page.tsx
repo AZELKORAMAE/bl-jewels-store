@@ -1,4 +1,4 @@
-import { Banknote, Gift, Truck } from "lucide-react";
+import { Banknote, Flame, Gift, Truck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -75,6 +75,11 @@ export default async function ProductPage({ params }: { params: Params }) {
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-[136px]">
             <Reveal y={16}>
+              {product.is_featured && (
+                <p className="mb-3 flex w-fit items-center gap-1.5 bg-or-500 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-bordeaux-950">
+                  <Flame className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Meilleure vente
+                </p>
+              )}
               {product.collection && (
                 <Link href={`/collections/${product.collection.slug}`} className="font-serif text-[22px] italic text-or-700 hover:text-or-600">
                   {product.collection.name}

@@ -135,7 +135,7 @@ export function ProductForm({ product, collections }: { product?: Product; colle
             <fieldset className="space-y-1">
               <legend className="field-label">Visibilité</legend>
               <Toggle name="is_active" label="Visible dans la boutique" defaultChecked={product?.is_active ?? true} />
-              <Toggle name="is_featured" label="Incontournable (accueil)" defaultChecked={product?.is_featured ?? false} />
+              <Toggle name="is_featured" label="Meilleure vente (flamme + section « Les plus vendus »)" defaultChecked={product?.is_featured ?? false} />
               <Toggle name="is_new" label="Badge « Nouveauté »" defaultChecked={product?.is_new ?? true} />
             </fieldset>
           </div>
