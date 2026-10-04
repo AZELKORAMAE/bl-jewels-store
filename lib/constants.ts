@@ -13,7 +13,7 @@ export const EDITORIAL_IMAGES = {
   // Grand visuel de l'accueil : fichiers dans public/images/hero/ (remplacez-les en gardant le même nom)
   hero: ["/images/hero/accueil-1.jpg", "/images/hero/accueil-2.jpg", "/images/hero/accueil-3.jpg"],
   pearls: `${U}photo-1763628212781-7d52844cf358`,
-  ecrin: `${U}photo-1515562141207-7a88fb7ce338`,
+  ecrin: "/images/accueil-ecrin.jpg",
   atelier: `${U}photo-1606760227091-3dd870d97f1d`,
   auth: `${U}photo-1694062045776-f48d9b6de57e`,
   admin: `${U}photo-1613945407943-59cd755fd69e`,

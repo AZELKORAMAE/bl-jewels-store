@@ -172,7 +172,7 @@ export default async function HomePage() {
           </Reveal>
           <Reveal className="order-1 md:order-2" delay={0.15}>
             <div className="relative">
-              <ParallaxImage src={EDITORIAL_IMAGES.ecrin} alt="Collier de perles dans son écrin" className="aspect-[4/5]" strength={8} />
+              <ParallaxImage src={EDITORIAL_IMAGES.ecrin} alt="Bracelet de perles et or porté au poignet" className="aspect-[4/5]" strength={8} />
               <div className="absolute -bottom-6 -left-6 hidden h-32 w-32 border border-or-500 md:block" aria-hidden />
             </div>
           </Reveal>
