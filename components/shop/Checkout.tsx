@@ -92,8 +92,16 @@ export function Checkout() {
       setServerError(error?.message || "La commande n'a pas pu être enregistrée. Veuillez réessayer.");
       return;
     }
+    const orderId = (data as { id: string }).id;
+    // E-mail de confirmation au client (n'empêche pas la commande en cas d'échec)
+    await fetch("/api/commande/confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: orderId }),
+      keepalive: true,
+    }).catch(() => {});
     clear();
-    router.push(`/commande/${(data as { id: string }).id}`);
+    router.push(`/commande/${orderId}`);
   };
 
   if (!ready) {
