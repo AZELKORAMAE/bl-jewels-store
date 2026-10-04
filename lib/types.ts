@@ -79,6 +79,8 @@ export type CartItem = {
   collection: string | null;
   image: string | null;
   price: number;
+  /** Prix initial barré (promotion), si supérieur au prix de vente */
+  compareAt?: number | null;
   quantity: number;
   stock: number;
 };

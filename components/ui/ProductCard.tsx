@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format";
+import { getPromo } from "@/lib/pricing";
 import type { Product } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -15,6 +16,7 @@ type ProductCardProps = {
 export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22vw, (min-width:768px) 33vw, 50vw", className }: ProductCardProps) {
   const [main, hover] = product.images;
   const soldOut = product.stock <= 0;
+  const promo = getPromo(product.price, product.compare_at_price);
 
   return (
     <Link href={`/produit/${product.slug}`} className={cn("group block cursor-pointer text-center", className)}>
@@ -51,6 +53,11 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
             <span className="bg-bordeaux-900 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ivoire">Épuisé</span>
           )}
         </div>
+        {promo && !soldOut && (
+          <span className="pointer-events-none absolute right-3 top-3 bg-bordeaux-900 px-2.5 py-1 text-[11px] font-semibold tabular-nums tracking-wide text-or-200">
+            −{promo.percent} %
+          </span>
+        )}
       </div>
       <div className="px-2 pb-2 pt-5">
         {product.collection && (
@@ -61,11 +68,17 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
             {product.name}
           </span>
         </h3>
-        <p className="mt-2 text-[13px] tabular-nums text-taupe">
-          {product.compare_at_price && product.compare_at_price > product.price && (
-            <span className="mr-2 line-through opacity-70">{formatPrice(product.compare_at_price)}</span>
+        <p className="mt-2 text-[13px] tabular-nums">
+          {promo && (
+            <span className="mr-2 text-taupe line-through decoration-taupe/70">
+              <span className="sr-only">Prix initial : </span>
+              {formatPrice(product.compare_at_price)}
+            </span>
           )}
-          {formatPrice(product.price)}
+          <span className={promo ? "font-medium text-bordeaux-700" : "text-taupe"}>
+            {promo && <span className="sr-only">Prix promotionnel : </span>}
+            {formatPrice(product.price)}
+          </span>
         </p>
       </div>
     </Link>

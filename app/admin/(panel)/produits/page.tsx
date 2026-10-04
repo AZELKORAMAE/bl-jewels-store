@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ActiveSwitch } from "@/components/admin/ActiveSwitch";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
 import { formatPrice } from "@/lib/format";
+import { percentFromPrices } from "@/lib/pricing";
 import { getAdmin } from "@/lib/supabase/server";
 import type { Product } from "@/lib/types";
 
@@ -100,7 +101,17 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                     </Link>
                   </td>
                   <td className="px-5 py-3 text-taupe">{p.collection?.name ?? <span className="text-bordeaux-600">Sans collection</span>}</td>
-                  <td className="px-5 py-3 text-right tabular-nums">{formatPrice(p.price)}</td>
+                  <td className="px-5 py-3 text-right tabular-nums">
+                    {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
+                      <span className="block text-[12px] text-taupe line-through">{formatPrice(p.compare_at_price)}</span>
+                    )}
+                    {formatPrice(p.price)}
+                    {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
+                      <span className="ml-1.5 rounded bg-bordeaux-50 px-1.5 py-0.5 text-[11px] font-medium text-bordeaux-700">
+                        −{percentFromPrices(Number(p.compare_at_price), Number(p.price))} %
+                      </span>
+                    )}
+                  </td>
                   <td className="px-5 py-3 text-right tabular-nums">
                     <span className={p.stock <= 0 ? "font-medium text-bordeaux-600" : p.stock <= 2 ? "font-medium text-or-700" : ""}>
                       {p.stock <= 0 ? "Épuisé" : p.stock}

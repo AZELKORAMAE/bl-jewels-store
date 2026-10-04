@@ -34,7 +34,7 @@ const REQUIRED: { key: keyof Form; message: string }[] = [
 
 export function Checkout() {
   const router = useRouter();
-  const { items, ready, subtotal, update, remove, clear } = useCart();
+  const { items, ready, subtotal, savings, update, remove, clear } = useCart();
   const [form, setForm] = useState<Form>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -134,7 +134,12 @@ export function Checkout() {
                         {item.name}
                       </Link>
                     </div>
-                    <p className="shrink-0 text-[15px] tabular-nums">{formatPrice(item.price * item.quantity)}</p>
+                    <p className="shrink-0 text-right text-[15px] tabular-nums">
+                      {item.compareAt && item.compareAt > item.price && (
+                        <span className="block text-[13px] text-taupe line-through">{formatPrice(item.compareAt * item.quantity)}</span>
+                      )}
+                      <span className={item.compareAt && item.compareAt > item.price ? "text-bordeaux-700" : ""}>{formatPrice(item.price * item.quantity)}</span>
+                    </p>
                   </div>
                   <div className="mt-auto flex items-center justify-between pt-4">
                     <QuantityStepper value={item.quantity} max={Math.min(20, Math.max(item.stock, 1))} onChange={(q) => update(item.productId, q)} label={item.name} />
@@ -193,6 +198,12 @@ export function Checkout() {
               <dt className="text-taupe">Sous-total</dt>
               <dd className="tabular-nums">{formatPrice(subtotal)}</dd>
             </div>
+            {savings > 0 && (
+              <div className="flex justify-between">
+                <dt className="text-taupe">Vos économies</dt>
+                <dd className="font-medium tabular-nums text-bordeaux-700">−{formatPrice(savings)}</dd>
+              </div>
+            )}
             <div className="flex justify-between">
               <dt className="text-taupe">Livraison</dt>
               <dd className="text-or-700">Offerte</dd>

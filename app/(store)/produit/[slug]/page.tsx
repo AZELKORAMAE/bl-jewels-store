@@ -11,6 +11,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { getPromo } from "@/lib/pricing";
 
 export const revalidate = 60;
 
@@ -34,6 +35,8 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   let related = product.collection_id ? await getProducts({ collectionId: product.collection_id, excludeId: product.id, limit: 10 }) : [];
   if (related.length < 4) related = [...related, ...(await getProducts({ featured: true, excludeId: product.id, limit: 8 }))].filter((p, i, a) => a.findIndex((x) => x.id === p.id) === i);
+
+  const promo = getPromo(product.price, product.compare_at_price);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -79,12 +82,22 @@ export default async function ProductPage({ params }: { params: Params }) {
               )}
               <h1 className="mt-2 font-serif text-[34px] font-light leading-tight text-bordeaux-900 md:text-[44px]">{product.name}</h1>
               {product.material && <p className="mt-3 text-[14px] text-taupe">{product.material}</p>}
-              <p className="mt-6 text-[22px] tabular-nums text-encre">
-                {product.compare_at_price && product.compare_at_price > product.price && (
-                  <span className="mr-3 text-[17px] text-taupe line-through">{formatPrice(product.compare_at_price)}</span>
+              <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2 tabular-nums">
+                {promo && (
+                  <span className="text-[17px] text-taupe line-through decoration-taupe/70">
+                    <span className="sr-only">Prix initial : </span>
+                    {formatPrice(product.compare_at_price)}
+                  </span>
                 )}
-                {formatPrice(product.price)}
-              </p>
+                <span className={promo ? "text-[24px] font-medium text-bordeaux-700" : "text-[22px] text-encre"}>
+                  {promo && <span className="sr-only">Prix promotionnel : </span>}
+                  {formatPrice(product.price)}
+                </span>
+                {promo && (
+                  <span className="self-center bg-bordeaux-900 px-2.5 py-1 text-[12px] font-semibold tracking-wide text-or-200">−{promo.percent} %</span>
+                )}
+              </div>
+              {promo && <p className="mt-2 text-[13px] text-or-700">Vous économisez {formatPrice(promo.amount)}</p>}
               <div className="my-8 h-px bg-sable" />
               <AddToCart product={product} />
 

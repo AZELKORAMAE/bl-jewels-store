@@ -13,7 +13,7 @@ import { useEscape, useLockBody } from "@/lib/hooks";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function CartDrawer() {
-  const { items, isOpen, close, update, remove, subtotal, count } = useCart();
+  const { items, isOpen, close, update, remove, subtotal, savings, count } = useCart();
   const pathname = usePathname();
   const closeBtn = useRef<HTMLButtonElement>(null);
 
@@ -72,7 +72,12 @@ export function CartDrawer() {
                         <Link href={`/produit/${item.slug}`} onClick={close} className="text-[14px] leading-snug text-encre hover:underline">
                           {item.name}
                         </Link>
-                        <p className="mt-1 text-[13px] tabular-nums text-taupe">{formatPrice(item.price)}</p>
+                        <p className="mt-1 text-[13px] tabular-nums">
+                          {item.compareAt && item.compareAt > item.price && (
+                            <span className="mr-2 text-taupe line-through">{formatPrice(item.compareAt)}</span>
+                          )}
+                          <span className={item.compareAt && item.compareAt > item.price ? "text-bordeaux-700" : "text-taupe"}>{formatPrice(item.price)}</span>
+                        </p>
                         <div className="mt-auto flex items-center justify-between pt-3">
                           <QuantityStepper
                             value={item.quantity}
@@ -97,6 +102,12 @@ export function CartDrawer() {
                     <span className="text-taupe">Sous-total</span>
                     <span className="font-medium tabular-nums text-encre">{formatPrice(subtotal)}</span>
                   </div>
+                  {savings > 0 && (
+                    <div className="mt-2 flex items-center justify-between text-[14px]">
+                      <span className="text-taupe">Vos économies</span>
+                      <span className="font-medium tabular-nums text-bordeaux-700">−{formatPrice(savings)}</span>
+                    </div>
+                  )}
                   <div className="mt-2 flex items-center justify-between text-[14px]">
                     <span className="text-taupe">Livraison</span>
                     <span className="text-or-700">Offerte</span>

@@ -22,6 +22,7 @@ export function AddToCart({ product }: { product: Product }) {
         collection: product.collection?.name ?? null,
         image: product.images[0] ?? null,
         price: product.price,
+        compareAt: product.compare_at_price && product.compare_at_price > product.price ? product.compare_at_price : null,
         stock: product.stock,
       },
       qty

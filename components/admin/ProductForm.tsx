@@ -7,6 +7,7 @@ import { saveProduct, type ActionState } from "@/app/admin/actions";
 import { slugify } from "@/lib/format";
 import type { Collection, Product } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
+import { PriceFields } from "./PriceFields";
 import { Card } from "./ui";
 
 function FieldError({ state, name }: { state: ActionState; name: string }) {
@@ -97,20 +98,13 @@ export function ProductForm({ product, collections }: { product?: Product; colle
       <div className="space-y-6">
         <Card title="Prix & stock">
           <div className="space-y-5">
-            <div>
-              <label htmlFor="price" className="field-label">
-                Prix <span className="text-bordeaux-600">*</span>
-              </label>
-              <input id="price" name="price" inputMode="decimal" defaultValue={product?.price ?? ""} className="field rounded-md tabular-nums" required />
-              <FieldError state={state} name="price" />
-            </div>
-            <div>
-              <label htmlFor="compare_at_price" className="field-label">
-                Prix barré <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
-              </label>
-              <input id="compare_at_price" name="compare_at_price" inputMode="decimal" defaultValue={product?.compare_at_price ?? ""} className="field rounded-md tabular-nums" />
-              <FieldError state={state} name="compare_at_price" />
-            </div>
+            <PriceFields
+              price={product?.price}
+              compareAt={product?.compare_at_price}
+              isNew={!product}
+              priceError={state?.fieldErrors?.price}
+              compareError={state?.fieldErrors?.compare_at_price}
+            />
             <div>
               <label htmlFor="stock" className="field-label">
                 Stock <span className="text-bordeaux-600">*</span>

@@ -7,6 +7,8 @@ type CartContextValue = {
   items: CartItem[];
   count: number;
   subtotal: number;
+  /** Total économisé grâce aux promotions */
+  savings: number;
   ready: boolean;
   isOpen: boolean;
   open: () => void;
@@ -78,6 +80,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isOpen,
       count: items.reduce((n, i) => n + i.quantity, 0),
       subtotal: items.reduce((n, i) => n + i.price * i.quantity, 0),
+      savings: items.reduce((n, i) => n + (i.compareAt && i.compareAt > i.price ? (i.compareAt - i.price) * i.quantity : 0), 0),
       open: () => setIsOpen(true),
       close: () => setIsOpen(false),
       add,

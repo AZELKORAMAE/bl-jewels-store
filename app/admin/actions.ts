@@ -50,7 +50,8 @@ export async function saveProduct(_: ActionState, fd: FormData): Promise<ActionS
     description: str(fd, "description") || null,
     details: str(fd, "details") || null,
     price,
-    compare_at_price: compare,
+    // Promotion seulement si le prix initial dépasse le prix de vente
+    compare_at_price: compare !== null && price !== null && compare > price ? compare : null,
     category: str(fd, "category") || "bagues",
     material: str(fd, "material") || null,
     collection_id: str(fd, "collection_id") || null,
