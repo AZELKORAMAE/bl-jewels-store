@@ -1,41 +1,27 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Menu, Search, ShoppingBag, User, X } from "lucide-react";
-import Image from "next/image";
+import { MapPin, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { useCart } from "@/lib/cart";
 import { cn } from "@/lib/cn";
-import { CATEGORIES, GIFT_PRICE_LIMIT } from "@/lib/constants";
-import { formatPrice } from "@/lib/format";
 import { useEscape, useLockBody } from "@/lib/hooks";
 import type { Collection } from "@/lib/types";
 
 type NavCollection = Pick<Collection, "name" | "slug" | "image_url">;
-type MegaKey = "joaillerie" | "collections";
-
-const NAV: { label: string; href: string; mega?: MegaKey }[] = [
-  { label: "Fiançailles", href: "/collections/fiancailles" },
-  { label: "Joaillerie", href: "/boutique", mega: "joaillerie" },
-  { label: "Haute Joaillerie", href: "/collections/haute-joaillerie" },
-  { label: "Collections", href: "/collections", mega: "collections" },
-  { label: "Cadeaux", href: "/boutique?prix=cadeaux" },
-  { label: "La Maison", href: "/maison" },
-];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+/** En-tête : la navigation affiche uniquement les collections gérées depuis l'admin. */
 export function Header({ collections }: { collections: NavCollection[] }) {
   const pathname = usePathname();
   const { count, ready, open: openCart } = useCart();
   const [scrolled, setScrolled] = useState(false);
-  const [mega, setMega] = useState<MegaKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const closeTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -45,27 +31,16 @@ export function Header({ collections }: { collections: NavCollection[] }) {
   }, []);
 
   useEffect(() => {
-    setMega(null);
     setMobileOpen(false);
     setSearchOpen(false);
   }, [pathname]);
 
   const closeAll = useCallback(() => {
-    setMega(null);
     setMobileOpen(false);
     setSearchOpen(false);
   }, []);
   useEscape(closeAll);
   useLockBody(mobileOpen || searchOpen);
-
-  const openMega = (key: MegaKey | null) => {
-    window.clearTimeout(closeTimer.current);
-    setMega(key);
-  };
-  const scheduleClose = () => {
-    window.clearTimeout(closeTimer.current);
-    closeTimer.current = window.setTimeout(() => setMega(null), 160);
-  };
 
   return (
     <>
@@ -74,7 +49,6 @@ export function Header({ collections }: { collections: NavCollection[] }) {
           "sticky top-0 z-40 border-b bg-white/95 backdrop-blur-md transition-shadow duration-500",
           scrolled ? "border-sable shadow-[0_8px_30px_-20px_rgba(44,0,1,0.35)]" : "border-transparent"
         )}
-        onMouseLeave={scheduleClose}
       >
         <div
           className={cn(
@@ -147,160 +121,56 @@ export function Header({ collections }: { collections: NavCollection[] }) {
           </div>
         </div>
 
-        {/* Navigation principale (desktop) */}
-        <nav aria-label="Navigation principale" className="hidden lg:block">
-          <ul className="flex h-12 items-center justify-center gap-9 xl:gap-12">
-            {NAV.map((item) => {
-              const active = mega === item.mega && !!item.mega;
-              const current = pathname === item.href.split("?")[0] && item.href !== "/boutique?prix=cadeaux";
-              return (
-                <li key={item.label} className="relative h-full">
-                  <Link
-                    href={item.href}
-                    onMouseEnter={() => openMega(item.mega ?? null)}
-                    onFocus={() => openMega(item.mega ?? null)}
-                    aria-expanded={item.mega ? active : undefined}
-                    aria-haspopup={item.mega ? "true" : undefined}
-                    className={cn(
-                      "group relative flex h-full items-center text-[11.5px] font-medium uppercase tracking-[0.2em] transition-colors",
-                      active || current ? "text-or-700" : "text-bordeaux-900 hover:text-or-700"
-                    )}
-                  >
-                    {item.label}
-                    <span
+        {/* Navigation : collections uniquement (desktop) */}
+        {collections.length > 0 && (
+          <nav aria-label="Collections" className="hidden lg:block">
+            <ul className="scrollbar-none flex h-12 items-center justify-center gap-9 overflow-x-auto xl:gap-12">
+              {collections.map((c) => {
+                const href = `/collections/${c.slug}`;
+                const current = pathname === href;
+                return (
+                  <li key={c.slug} className="relative h-full shrink-0">
+                    <Link
+                      href={href}
+                      aria-current={current ? "page" : undefined}
                       className={cn(
-                        "absolute inset-x-0 bottom-2 h-px origin-center bg-or-500 transition-transform duration-500 ease-luxe",
-                        active || current ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                        "group relative flex h-full items-center whitespace-nowrap text-[11.5px] font-medium uppercase tracking-[0.2em] transition-colors",
+                        current ? "text-or-700" : "text-bordeaux-900 hover:text-or-700"
                       )}
-                    />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Méga-menu */}
-        <AnimatePresence>
-          {mega && (
-            <motion.div
-              key={mega}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6, transition: { duration: 0.18 } }}
-              transition={{ duration: 0.35, ease: EASE }}
-              onMouseEnter={() => openMega(mega)}
-              className="absolute inset-x-0 top-full hidden border-t border-sable bg-white lg:block"
-            >
-              <div className="container py-10">
-                {mega === "joaillerie" ? <JewelryMega /> : <CollectionsMega collections={collections} />}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    >
+                      {c.name}
+                      <span
+                        className={cn(
+                          "absolute inset-x-0 bottom-2 h-px origin-center bg-or-500 transition-transform duration-500 ease-luxe",
+                          current ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                        )}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        )}
       </header>
 
-      {/* Voile derrière le méga-menu */}
-      <AnimatePresence>
-        {mega && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onMouseEnter={() => setMega(null)}
-            className="fixed inset-0 z-30 hidden bg-bordeaux-950/25 lg:block"
-            aria-hidden
-          />
-        )}
-      </AnimatePresence>
-
-      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} collections={collections} />
+      <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} collections={collections} pathname={pathname} />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} collections={collections} />
     </>
   );
 }
 
-function MegaLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <li>
-      <Link href={href} className="inline-block py-1.5 text-[14px] text-encre transition-colors hover:text-or-700">
-        {children}
-      </Link>
-    </li>
-  );
-}
-
-function JewelryMega() {
-  return (
-    <div className="grid grid-cols-12 gap-10">
-      <div className="col-span-3">
-        <p className="eyebrow mb-5 text-or-700">Catégories</p>
-        <ul>
-          {CATEGORIES.map((c) => (
-            <MegaLink key={c.slug} href={`/boutique?categorie=${c.slug}`}>
-              {c.label}
-            </MegaLink>
-          ))}
-          <MegaLink href="/boutique">Toute la joaillerie</MegaLink>
-        </ul>
-      </div>
-      <div className="col-span-3">
-        <p className="eyebrow mb-5 text-or-700">Découvrir</p>
-        <ul>
-          <MegaLink href="/boutique?tri=nouveautes">Nouveautés</MegaLink>
-          <MegaLink href="/collections/fiancailles">Bagues de fiançailles</MegaLink>
-          <MegaLink href="/collections/haute-joaillerie">Haute Joaillerie</MegaLink>
-          <MegaLink href="/boutique?prix=cadeaux">Cadeaux de moins de {formatPrice(GIFT_PRICE_LIMIT)}</MegaLink>
-        </ul>
-      </div>
-      <div className="col-span-6 grid grid-cols-2 gap-6">
-        {CATEGORIES.slice(0, 2).map((c) => (
-          <Link key={c.slug} href={`/boutique?categorie=${c.slug}`} className="group block">
-            <div className="relative aspect-[4/3] overflow-hidden bg-champagne">
-              <Image src={c.image} alt={c.label} fill sizes="25vw" className="object-cover transition-transform duration-1000 ease-luxe group-hover:scale-105" />
-            </div>
-            <p className="mt-3 font-serif text-xl text-bordeaux-900">{c.label}</p>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CollectionsMega({ collections }: { collections: NavCollection[] }) {
-  return (
-    <div className="grid grid-cols-12 gap-10">
-      <div className="col-span-3">
-        <p className="eyebrow mb-5 text-or-700">Nos collections</p>
-        <ul>
-          {collections.map((c) => (
-            <MegaLink key={c.slug} href={`/collections/${c.slug}`}>
-              {c.name}
-            </MegaLink>
-          ))}
-          <MegaLink href="/collections">Toutes les collections</MegaLink>
-        </ul>
-      </div>
-      <div className="col-span-9 grid grid-cols-4 gap-5">
-        {collections.slice(0, 4).map((c) => (
-          <Link key={c.slug} href={`/collections/${c.slug}`} className="group block">
-            <div className="relative aspect-[3/4] overflow-hidden bg-champagne">
-              {c.image_url && (
-                <Image src={c.image_url} alt={c.name} fill sizes="18vw" className="object-cover transition-transform duration-1000 ease-luxe group-hover:scale-105" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-bordeaux-950/60 via-transparent" />
-              <p className="absolute inset-x-0 bottom-4 text-center font-serif text-xl text-ivoire">{c.name}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MobileMenu({ open, onClose, collections }: { open: boolean; onClose: () => void; collections: NavCollection[] }) {
-  const [expanded, setExpanded] = useState<MegaKey | null>(null);
-
+function MobileMenu({
+  open,
+  onClose,
+  collections,
+  pathname,
+}: {
+  open: boolean;
+  onClose: () => void;
+  collections: NavCollection[];
+  pathname: string;
+}) {
   return (
     <AnimatePresence>
       {open && (
@@ -325,52 +195,29 @@ function MobileMenu({ open, onClose, collections }: { open: boolean; onClose: ()
                 <X className="h-5 w-5" strokeWidth={1.4} />
               </button>
             </div>
-            <ul className="flex-1 overflow-y-auto px-5 py-4">
-              {NAV.map((item) => (
-                <li key={item.label} className="border-b border-sable/70">
-                  {item.mega ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setExpanded((e) => (e === item.mega ? null : item.mega!))}
-                        aria-expanded={expanded === item.mega}
-                        className="flex min-h-[56px] w-full cursor-pointer items-center justify-between font-serif text-[22px] text-bordeaux-900"
+            <div className="flex-1 overflow-y-auto px-5 py-4">
+              <p className="eyebrow mb-2 text-or-700">Nos collections</p>
+              <ul>
+                {collections.map((c) => {
+                  const href = `/collections/${c.slug}`;
+                  return (
+                    <li key={c.slug} className="border-b border-sable/70">
+                      <Link
+                        href={href}
+                        aria-current={pathname === href ? "page" : undefined}
+                        className={cn("flex min-h-[56px] items-center font-serif text-[22px]", pathname === href ? "text-or-700" : "text-bordeaux-900")}
                       >
-                        {item.label}
-                        <ChevronDown className={cn("h-4 w-4 text-or-700 transition-transform duration-300", expanded === item.mega && "rotate-180")} strokeWidth={1.5} />
-                      </button>
-                      <AnimatePresence initial={false}>
-                        {expanded === item.mega && (
-                          <motion.ul
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: EASE }}
-                            className="overflow-hidden pb-3"
-                          >
-                            {(item.mega === "joaillerie"
-                              ? [...CATEGORIES.map((c) => ({ label: c.label, href: `/boutique?categorie=${c.slug}` })), { label: "Toute la joaillerie", href: "/boutique" }]
-                              : [...collections.map((c) => ({ label: c.name, href: `/collections/${c.slug}` })), { label: "Toutes les collections", href: "/collections" }]
-                            ).map((l) => (
-                              <li key={l.href}>
-                                <Link href={l.href} className="flex min-h-[44px] items-center text-[14px] text-taupe">
-                                  {l.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </motion.ul>
-                        )}
-                      </AnimatePresence>
-                    </>
-                  ) : (
-                    <Link href={item.href} className="flex min-h-[56px] items-center font-serif text-[22px] text-bordeaux-900">
-                      {item.label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
+                        {c.name}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
             <div className="space-y-1 border-t border-sable bg-ivoire px-5 py-5">
+              <Link href="/maison#boutique" className="flex min-h-[44px] items-center gap-3 text-[12px] font-medium uppercase tracking-[0.18em] text-bordeaux-900">
+                <MapPin className="h-4 w-4" strokeWidth={1.4} /> Notre boutique
+              </Link>
               <Link href="/compte" className="flex min-h-[44px] items-center gap-3 text-[12px] font-medium uppercase tracking-[0.18em] text-bordeaux-900">
                 <User className="h-4 w-4" strokeWidth={1.4} /> Mon compte
               </Link>
@@ -384,8 +231,6 @@ function MobileMenu({ open, onClose, collections }: { open: boolean; onClose: ()
     </AnimatePresence>
   );
 }
-
-const POPULAR = ["Perles", "Or jaune", "Diamant", "Créoles", "Solitaire"];
 
 function SearchOverlay({ open, onClose, collections }: { open: boolean; onClose: () => void; collections: NavCollection[] }) {
   const router = useRouter();
@@ -443,35 +288,23 @@ function SearchOverlay({ open, onClose, collections }: { open: boolean; onClose:
                   autoComplete="off"
                 />
               </form>
-              <div className="mx-auto mt-8 grid max-w-3xl gap-8 pb-4 sm:grid-cols-2">
-                <div>
-                  <p className="eyebrow mb-4 text-or-700">Recherches populaires</p>
+              {collections.length > 0 && (
+                <div className="mx-auto mt-8 max-w-3xl pb-4">
+                  <p className="eyebrow mb-4 text-or-700">Nos collections</p>
                   <div className="flex flex-wrap gap-2">
-                    {POPULAR.map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => go(p)}
-                        className="min-h-[40px] cursor-pointer border border-sable px-4 text-[13px] text-encre transition-colors hover:border-bordeaux-900"
+                    {collections.map((c) => (
+                      <Link
+                        key={c.slug}
+                        href={`/collections/${c.slug}`}
+                        onClick={onClose}
+                        className="inline-flex min-h-[40px] items-center border border-sable px-4 text-[13px] text-encre transition-colors hover:border-bordeaux-900"
                       >
-                        {p}
-                      </button>
+                        {c.name}
+                      </Link>
                     ))}
                   </div>
                 </div>
-                <div>
-                  <p className="eyebrow mb-4 text-or-700">Collections</p>
-                  <ul className="space-y-1">
-                    {collections.slice(0, 5).map((c) => (
-                      <li key={c.slug}>
-                        <Link href={`/collections/${c.slug}`} onClick={onClose} className="inline-flex min-h-[36px] items-center font-serif text-lg text-bordeaux-900 hover:text-or-700">
-                          {c.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </div>
