@@ -1,4 +1,4 @@
-import { Banknote, Clock, Gem, Gift, MapPin, PenLine, Phone, RotateCcw, Truck } from "lucide-react";
+import { Banknote, Clock, Gem, Gift, MapPin, PenLine, Phone, MessageCircle, Truck } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/SocialIcons";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -19,7 +19,7 @@ const SERVICES = [
   { icon: Gift, title: "Écrin signature", text: "Chaque bijou est présenté dans notre écrin bordeaux, avec ruban or et carte manuscrite." },
   { icon: PenLine, title: "Gravure offerte", text: "Précisez vos initiales, une date ou un mot doux lors de la commande." },
   { icon: Gem, title: "Certificat d'authenticité", text: "Métaux précieux poinçonnés et pierres accompagnées de leur certificat." },
-  { icon: RotateCcw, title: "Retours sous 14 jours", text: "Si la création ne vous convient pas, nous l'échangeons ou la reprenons." },
+  { icon: MessageCircle, title: "Échange & retour sur WhatsApp", text: "Pour échanger ou retourner une création, écrivez-nous sur WhatsApp au +212 6 55 77 79 34." },
 ];
 
 export default function MaisonPage() {
@@ -48,7 +48,7 @@ export default function MaisonPage() {
               avec soin, puis façonnée par des artisans qui maîtrisent le sertissage, le polissage et la ciselure.
             </p>
             <p>
-              Or 18 carats, diamants sélectionnés, perles au lustre profond : nous ne travaillons que des matières nobles, pour des créations
+              Or 18 carats certifié, finitions polies et ciselées à la main : nous ne travaillons que l&apos;or, pour des créations
               qui accompagnent chaque moment de votre vie.
             </p>
           </div>

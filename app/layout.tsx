@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s | BL Jewels",
   },
   description:
-    "BL Jewels, Maison de Joaillerie : bagues, colliers, bracelets et boucles d'oreilles en or, diamants et perles. Livraison offerte et écrin signature.",
+    "BL Jewels, Maison de Joaillerie à Casablanca : bijoux en or 18 carats, colliers, gourmettes et bagues. Livraison offerte et écrin signature.",
   openGraph: {
     type: "website",
     locale: "fr_FR",

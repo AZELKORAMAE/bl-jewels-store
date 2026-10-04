@@ -1,4 +1,4 @@
-const WORDS = ["Or 18 carats", "Diamants certifiés", "Perles fines", "Gravure offerte", "Écrin signature", "Fait main"];
+const WORDS = ["Or 18 carats", "Or certifié", "Perles fines", "Gravure offerte", "Écrin signature", "Fait main"];
 
 /** Bandeau défilant en serif italique. */
 export function Marquee() {

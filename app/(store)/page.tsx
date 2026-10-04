@@ -34,7 +34,7 @@ export default async function HomePage() {
       image: EDITORIAL_IMAGES.hero[0],
       eyebrow: "Nouvelle collection",
       title: "L'Éclat Éternel",
-      text: "Des diamants sertis à la main qui capturent la lumière, pour célébrer chaque instant précieux.",
+      text: "Des créations en or 18 carats façonnées à la main, pour célébrer chaque instant précieux.",
       href: "/collections/eclat-eternel",
       cta: "Découvrir",
     },

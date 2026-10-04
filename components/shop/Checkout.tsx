@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { QuantityStepper } from "@/components/site/CartDrawer";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
@@ -161,7 +162,17 @@ export function Checkout() {
           <fieldset className="grid gap-5 sm:grid-cols-2" disabled={submitting}>
             <Field label="Nom complet" name="full_name" value={form.full_name} onChange={set("full_name")} error={errors.full_name} autoComplete="name" required className="sm:col-span-2" />
             <Field label="E-mail" name="email" type="email" value={form.email} onChange={set("email")} error={errors.email} autoComplete="email" required />
-            <Field label="Téléphone" name="phone" type="tel" value={form.phone} onChange={set("phone")} error={errors.phone} autoComplete="tel" required />
+            <PhoneInput
+              id="phone"
+              label="Téléphone (WhatsApp)"
+              value={form.phone}
+              onChange={(v) => {
+                setForm((f) => ({ ...f, phone: v }));
+                if (errors.phone) setErrors((er) => ({ ...er, phone: undefined }));
+              }}
+              error={errors.phone}
+              required
+            />
             <Field label="Adresse" name="address" value={form.address} onChange={set("address")} error={errors.address} autoComplete="street-address" required className="sm:col-span-2" />
             <Field label="Ville" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required />
             <Field label="Code postal" name="postal_code" value={form.postal_code} onChange={set("postal_code")} autoComplete="postal-code" />

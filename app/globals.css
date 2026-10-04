@@ -12,6 +12,8 @@
   }
   body {
     @apply bg-white font-sans text-encre antialiased;
+    /* Sécurité : la page ne dépasse jamais la largeur de l'écran (mobile) */
+    overflow-x: clip;
     font-feature-settings: "kern", "liga";
   }
   ::selection {

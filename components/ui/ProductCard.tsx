@@ -20,7 +20,7 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
   const promo = getPromo(product.price, product.compare_at_price);
 
   return (
-    <Link href={`/produit/${product.slug}`} className={cn("group block cursor-pointer text-center", className)}>
+    <Link href={`/produit/${product.slug}`} className={cn("group relative block cursor-pointer text-center", className)}>
       <div className="relative aspect-square overflow-hidden bg-[#F6F1EB]">
         {main ? (
           <Image
@@ -46,25 +46,24 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
             className="object-cover opacity-0 transition-all duration-700 ease-luxe group-hover:scale-[1.04] group-hover:opacity-100"
           />
         )}
-        <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
+        <div className="pointer-events-none absolute left-2.5 right-2.5 top-2.5 flex flex-nowrap items-center gap-1.5">
           {product.is_featured && !soldOut && (
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-or-500 text-bordeaux-950" title="Meilleure vente">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-or-500 text-bordeaux-950" title="Meilleure vente">
               <Flame className="h-4 w-4" strokeWidth={2} aria-hidden />
               <span className="sr-only">Meilleure vente</span>
             </span>
           )}
           {product.is_new && !soldOut && (
-            <span className="bg-white/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-bordeaux-900">Nouveauté</span>
+            <span className="truncate bg-white/90 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.15em] text-bordeaux-900">Nouveauté</span>
           )}
           {soldOut && (
             <span className="bg-bordeaux-900 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-ivoire">Épuisé</span>
           )}
+          {promo && !soldOut && (
+            <span className="ml-auto shrink-0 bg-bordeaux-900 px-2 py-1 text-[11px] font-semibold tabular-nums tracking-wide text-or-200">−{promo.percent} %</span>
+          )}
         </div>
-        {promo && !soldOut && (
-          <span className="pointer-events-none absolute right-3 top-3 bg-bordeaux-900 px-2.5 py-1 text-[11px] font-semibold tabular-nums tracking-wide text-or-200">
-            −{promo.percent} %
-          </span>
-        )}
+
       </div>
       <div className="px-2 pb-2 pt-5">
         {product.collection && (

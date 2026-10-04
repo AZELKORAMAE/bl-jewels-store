@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Field } from "@/components/shop/Checkout";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { OtpVerify } from "./OtpVerify";
 import { PasswordInput } from "./PasswordInput";
 
@@ -77,7 +78,7 @@ export function SignupForm() {
     <form onSubmit={submit} noValidate className="space-y-5">
       <Field label="Nom complet" name="full_name" value={form.full_name} onChange={set("full_name")} error={errors.full_name} autoComplete="name" required />
       <Field label="E-mail" name="email" type="email" value={form.email} onChange={set("email")} error={errors.email} autoComplete="email" required />
-      <Field label="Téléphone" name="phone" type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" />
+      <PhoneInput id="phone" label="Téléphone (WhatsApp)" value={form.phone} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
       <PasswordInput id="password" label="Mot de passe" value={password} onChange={setPassword} autoComplete="new-password" error={errors.password} hint="8 caractères minimum." />
       <PasswordInput id="confirm" label="Confirmer le mot de passe" value={confirm} onChange={setConfirm} autoComplete="new-password" error={errors.confirm} />
       {errors.form && (
