@@ -90,6 +90,8 @@ create table if not exists public.products (
   is_featured boolean not null default false,
   is_new boolean not null default false,
   is_active boolean not null default true,
+  featured_rank int,  -- ordre dans « Les plus vendus » (accueil)
+  new_rank int,       -- ordre dans « Nouveautés » (accueil)
   created_at timestamptz not null default now()
 );
 

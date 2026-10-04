@@ -116,9 +116,38 @@ export async function getProducts(query: ProductQuery = {}): Promise<Product[]> 
   return (data ?? []).map(normalizeProduct);
 }
 
-/** Produits cochés « Meilleure vente » dans l'admin (flamme + section de l'accueil). */
-export async function getBestSellers(limit = 12): Promise<Product[]> {
-  return getProducts({ featured: true, limit, sort: "nouveautes" });
+type HomeSection = "featured" | "new";
+
+/**
+ * Produits d'une section de l'accueil, dans l'ordre réglé dans Admin → Page d'accueil.
+ * « featured » = cochés « Meilleure vente » ; « new » = cochés « Nouveauté ».
+ * Sans ordre défini (ou avant l'exécution de supabase/ordre-accueil.sql) : du plus récent au plus ancien.
+ */
+export async function getHomeSection(section: HomeSection, limit = 12): Promise<Product[]> {
+  const flag = section === "featured" ? "is_featured" : "is_new";
+  const rank = section === "featured" ? "featured_rank" : "new_rank";
+  if (!isSupabaseConfigured) return getProducts({ [section === "featured" ? "featured" : "isNew"]: true, sort: "nouveautes", limit });
+
+  const { data, error } = await createPublicClient()
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .eq("is_active", true)
+    .eq(flag, true)
+    .order(rank, { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) return getProducts({ [section === "featured" ? "featured" : "isNew"]: true, sort: "nouveautes", limit });
+  return (data ?? []).map(normalizeProduct);
+}
+
+/** Produits cochés « Meilleure vente » (flamme + section « Les plus vendus »). */
+export function getBestSellers(limit = 12) {
+  return getHomeSection("featured", limit);
+}
+
+/** Produits cochés « Nouveauté » (section « Nouveautés »). */
+export function getNewArrivals(limit = 12) {
+  return getHomeSection("new", limit);
 }
 
 export async function getProduct(slug: string): Promise<Product | null> {

@@ -8,7 +8,7 @@ import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { EDITORIAL_IMAGES } from "@/lib/constants";
-import { getBestSellers, getCollections, getProducts } from "@/lib/data";
+import { getBestSellers, getCollections, getNewArrivals } from "@/lib/data";
 import { cn } from "@/lib/cn";
 
 export const revalidate = 60;
@@ -23,7 +23,7 @@ const SERVICES = [
 export default async function HomePage() {
   const [bestSellers, newest, collections] = await Promise.all([
     getBestSellers(10),
-    getProducts({ sort: "nouveautes", limit: 12 }),
+    getNewArrivals(12),
     getCollections(),
   ]);
 
@@ -130,7 +130,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Nouveautés */}
+      {/* Nouveautés (ordre réglé dans Admin → Page d'accueil) */}
+      {newest.length > 0 && (
       <section className="container py-20 md:py-28">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
           <SectionHeading align="left" eyebrow="Nouveautés" title="Les dernières créations" className="max-w-xl" />
@@ -144,6 +145,7 @@ export default async function HomePage() {
           <ProductCarousel products={newest} label="Nouveautés" />
         </Reveal>
       </section>
+      )}
 
       <Marquee />
 
