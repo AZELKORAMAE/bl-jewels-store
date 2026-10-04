@@ -40,6 +40,7 @@ export default async function HomePage() {
     },
     {
       image: EDITORIAL_IMAGES.hero[1],
+      position: "50% 25%",
       eyebrow: "Or Signature",
       title: "L'or, sublimé",
       text: "Des lignes pures en or 18 carats, pensées pour être portées chaque jour.",

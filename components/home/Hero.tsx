@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
-type Slide = { image: string; eyebrow: string; title: string; text: string; href: string; cta: string };
+type Slide = { image: string; eyebrow: string; title: string; text: string; href: string; cta: string; /** cadrage, ex. "50% 20%" */ position?: string };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const DURATION = 7000;
@@ -46,7 +46,7 @@ export function Hero({ slides }: { slides: Slide[] }) {
             transition={{ duration: 1.2, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            <Image src={slide.image} alt="" fill priority={index === 0} sizes="100vw" className="animate-ken-burns object-cover" />
+            <Image src={slide.image} alt="" fill priority={index === 0} sizes="100vw" className="animate-ken-burns object-cover" style={{ objectPosition: slide.position ?? "50% 50%" }} />
           </motion.div>
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-r from-bordeaux-950/85 via-bordeaux-950/45 to-transparent" />
