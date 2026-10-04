@@ -7,8 +7,8 @@ import { ParallaxImage } from "@/components/home/ParallaxImage";
 import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { CATEGORIES, EDITORIAL_IMAGES } from "@/lib/constants";
-import { getCollections, getProducts } from "@/lib/data";
+import { EDITORIAL_IMAGES } from "@/lib/constants";
+import { getCategories, getCollections, getProducts } from "@/lib/data";
 import { cn } from "@/lib/cn";
 
 export const revalidate = 60;
@@ -21,10 +21,11 @@ const SERVICES = [
 ];
 
 export default async function HomePage() {
-  const [featured, newest, collections] = await Promise.all([
+  const [featured, newest, collections, categories] = await Promise.all([
     getProducts({ featured: true, limit: 12 }),
     getProducts({ sort: "nouveautes", limit: 12 }),
     getCollections(),
+    getCategories(),
   ]);
 
   const pearls = collections.find((c) => c.slug === "perles-de-lune") ?? collections[0];
@@ -73,32 +74,43 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* Catégories */}
-      <section className="bg-ivoire py-20 md:py-28">
-        <div className="container">
-          <SectionHeading eyebrow="Explorer" title="Acheter par catégorie" />
-          <RevealGroup className="mt-14 grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6 lg:grid-cols-4">
-            {CATEGORIES.map((c) => (
-              <RevealItem key={c.slug}>
-                <Link href={`/boutique?categorie=${c.slug}`} className="group block text-center">
-                  <div className="relative aspect-[3/4] overflow-hidden bg-champagne">
-                    <Image
-                      src={c.image}
-                      alt={c.label}
-                      fill
-                      sizes="(min-width:1024px) 25vw, 50vw"
-                      className="object-cover transition-transform duration-[1.2s] ease-luxe group-hover:scale-[1.06]"
-                    />
-                    <div className="absolute inset-0 bg-bordeaux-950/0 transition-colors duration-500 group-hover:bg-bordeaux-950/10" />
-                  </div>
-                  <h3 className="mt-5 font-serif text-[22px] text-bordeaux-900 md:text-[26px]">{c.short}</h3>
-                  <span className="link-underline mt-2 text-[11px] text-or-700">Découvrir</span>
-                </Link>
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
+      {/* Catégories (gérées depuis Admin → Catégories) */}
+      {categories.length > 0 && (
+        <section className="bg-ivoire py-20 md:py-28">
+          <div className="container">
+            <SectionHeading eyebrow="Explorer" title="Acheter par catégorie" />
+            <RevealGroup
+              className={cn(
+                "mx-auto mt-14 grid grid-cols-2 gap-x-4 gap-y-10 md:gap-x-6",
+                categories.length >= 4 ? "lg:grid-cols-4" : categories.length === 3 ? "lg:grid-cols-3" : "max-w-3xl"
+              )}
+            >
+              {categories.map((c) => (
+                <RevealItem key={c.id}>
+                  <Link href={`/boutique?categorie=${c.slug}`} className="group block text-center">
+                    <div className="relative aspect-[3/4] overflow-hidden bg-champagne">
+                      {c.image_url ? (
+                        <Image
+                          src={c.image_url}
+                          alt={c.name}
+                          fill
+                          sizes="(min-width:1024px) 25vw, 50vw"
+                          className="object-cover transition-transform duration-[1.2s] ease-luxe group-hover:scale-[1.06]"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center font-script text-5xl text-or-500">BL</div>
+                      )}
+                      <div className="absolute inset-0 bg-bordeaux-950/0 transition-colors duration-500 group-hover:bg-bordeaux-950/10" />
+                    </div>
+                    <h3 className="mt-5 font-serif text-[22px] text-bordeaux-900 md:text-[26px]">{c.name}</h3>
+                    <span className="link-underline mt-2 text-[11px] text-or-700">Découvrir</span>
+                  </Link>
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          </div>
+        </section>
+      )}
 
       {/* Éditorial Perles de Lune */}
       {pearls && (

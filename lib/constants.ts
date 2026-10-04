@@ -54,9 +54,6 @@ export const STORE = {
   mapsEmbed: `https://www.google.com/maps?q=${encodeURIComponent(STORE_ADDRESS)}&output=embed`,
 };
 
-export function categoryLabel(slug: string) {
-  return CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
-}
 
 export const SORT_OPTIONS = [
   { value: "", label: "Recommandés" },

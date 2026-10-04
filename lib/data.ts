@@ -2,7 +2,8 @@ import "server-only";
 import catalog from "@/data/catalog.json";
 import { isSupabaseConfigured } from "./supabase/config";
 import { createPublicClient } from "./supabase/server";
-import type { Collection, Product } from "./types";
+import { CATEGORIES } from "./constants";
+import type { Category, Collection, Product } from "./types";
 
 // ---------------------------------------------------------------------
 //  Mode démo : données locales tant que Supabase n'est pas configuré
@@ -56,6 +57,26 @@ const PRODUCT_SELECT = "*, collection:collections(name, slug)";
 
 function normalizeProduct(row: Record<string, unknown>): Product {
   return { ...(row as Product), price: Number(row.price), compare_at_price: row.compare_at_price == null ? null : Number(row.compare_at_price) };
+}
+
+// Catégories par défaut : mode démo, ou tant que supabase/categories.sql n'a pas été exécuté
+const defaultCategories: Category[] = CATEGORIES.map((c, i) => ({
+  id: c.slug,
+  name: c.short,
+  slug: c.slug,
+  image_url: c.image,
+  sort_order: i + 1,
+}));
+
+export async function getCategories(): Promise<Category[]> {
+  if (!isSupabaseConfigured) return defaultCategories;
+  const { data, error } = await createPublicClient().from("categories").select("id, name, slug, image_url, sort_order").order("sort_order").order("name");
+  if (error) return defaultCategories;
+  return (data as Category[]) ?? [];
+}
+
+export function categoryName(categories: Category[], slug: string) {
+  return categories.find((c) => c.slug === slug)?.name ?? slug;
 }
 
 export async function getCollections(): Promise<Collection[]> {

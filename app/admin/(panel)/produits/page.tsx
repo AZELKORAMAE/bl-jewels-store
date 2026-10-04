@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ActiveSwitch } from "@/components/admin/ActiveSwitch";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
-import { CATEGORIES, categoryLabel } from "@/lib/constants";
+import { categoryName, getCategories } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { getAdmin } from "@/lib/supabase/server";
 import type { Product } from "@/lib/types";
@@ -22,7 +22,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
     const safe = q.replace(/[,()*%\\]/g, " ").trim();
     if (safe) req = req.ilike("name", `%${safe}%`);
   }
-  const { data } = await req;
+  const [{ data }, categories] = await Promise.all([req, getCategories()]);
   const products = (data ?? []) as Product[];
 
   return (
@@ -52,9 +52,9 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         </label>
         <select id="categorie" name="categorie" defaultValue={categorie ?? ""} className="field cursor-pointer rounded-md sm:w-56">
           <option value="">Toutes les catégories</option>
-          {CATEGORIES.map((c) => (
+          {categories.map((c) => (
             <option key={c.slug} value={c.slug}>
-              {c.label}
+              {c.name}
             </option>
           ))}
         </select>
@@ -98,7 +98,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                       </span>
                     </Link>
                   </td>
-                  <td className="px-5 py-3 text-taupe">{categoryLabel(p.category)}</td>
+                  <td className="px-5 py-3 text-taupe">{categoryName(categories, p.category)}</td>
                   <td className="px-5 py-3 text-right tabular-nums">{formatPrice(p.price)}</td>
                   <td className="px-5 py-3 text-right tabular-nums">
                     <span className={p.stock <= 0 ? "font-medium text-bordeaux-600" : p.stock <= 2 ? "font-medium text-or-700" : ""}>

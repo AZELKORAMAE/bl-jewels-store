@@ -4,9 +4,8 @@ import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { saveProduct, type ActionState } from "@/app/admin/actions";
-import { CATEGORIES } from "@/lib/constants";
 import { slugify } from "@/lib/format";
-import type { Collection, Product } from "@/lib/types";
+import type { Category, Collection, Product } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
 import { Card } from "./ui";
 
@@ -19,7 +18,15 @@ function FieldError({ state, name }: { state: ActionState; name: string }) {
   ) : null;
 }
 
-export function ProductForm({ product, collections }: { product?: Product; collections: Pick<Collection, "id" | "name">[] }) {
+export function ProductForm({
+  product,
+  collections,
+  categories,
+}: {
+  product?: Product;
+  collections: Pick<Collection, "id" | "name">[];
+  categories: Pick<Category, "slug" | "name">[];
+}) {
   const [state, action, pending] = useActionState(saveProduct, null);
   const [name, setName] = useState(product?.name ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
@@ -128,10 +135,10 @@ export function ProductForm({ product, collections }: { product?: Product; colle
               <label htmlFor="category" className="field-label">
                 Catégorie
               </label>
-              <select id="category" name="category" defaultValue={product?.category ?? "bagues"} className="field cursor-pointer rounded-md">
-                {CATEGORIES.map((c) => (
+              <select id="category" name="category" defaultValue={product?.category ?? categories[0]?.slug} className="field cursor-pointer rounded-md">
+                {categories.map((c) => (
                   <option key={c.slug} value={c.slug}>
-                    {c.label}
+                    {c.name}
                   </option>
                 ))}
               </select>

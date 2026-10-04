@@ -6,8 +6,8 @@ import { ProductGrid } from "@/components/shop/ProductGrid";
 import { SortSelect } from "@/components/shop/SortSelect";
 import { Reveal } from "@/components/ui/Reveal";
 import { cn } from "@/lib/cn";
-import { CATEGORIES, GIFT_PRICE_LIMIT, categoryLabel } from "@/lib/constants";
-import { getProducts } from "@/lib/data";
+import { GIFT_PRICE_LIMIT } from "@/lib/constants";
+import { categoryName, getCategories, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
 type SearchParams = Promise<{ categorie?: string; tri?: string; q?: string; prix?: string }>;
@@ -15,20 +15,23 @@ type SearchParams = Promise<{ categorie?: string; tri?: string; q?: string; prix
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const { categorie, q } = await searchParams;
   if (q) return { title: `Recherche « ${q} »` };
-  return { title: categorie ? categoryLabel(categorie) : "Toute la joaillerie" };
+  return { title: categorie ? categoryName(await getCategories(), categorie) : "Toute la joaillerie" };
 }
 
 export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
   const { categorie, tri, q, prix } = await searchParams;
   const gifts = prix === "cadeaux";
-  const products = await getProducts({
-    category: categorie,
-    sort: tri,
-    q,
-    maxPrice: gifts ? GIFT_PRICE_LIMIT : undefined,
-  });
+  const [products, categories] = await Promise.all([
+    getProducts({
+      category: categorie,
+      sort: tri,
+      q,
+      maxPrice: gifts ? GIFT_PRICE_LIMIT : undefined,
+    }),
+    getCategories(),
+  ]);
 
-  const title = q ? `« ${q} »` : gifts ? "Idées cadeaux" : categorie ? categoryLabel(categorie) : "Toute la joaillerie";
+  const title = q ? `« ${q} »` : gifts ? "Idées cadeaux" : categorie ? categoryName(categories, categorie) : "Toute la joaillerie";
   const intro = q
     ? `${products.length} création${products.length > 1 ? "s" : ""} correspond${products.length > 1 ? "ent" : ""} à votre recherche.`
     : gifts
@@ -64,10 +67,10 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                 Tout
               </FilterChip>
             </li>
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <li key={c.slug}>
                 <FilterChip href={chipHref(c.slug)} active={categorie === c.slug}>
-                  {c.short}
+                  {c.name}
                 </FilterChip>
               </li>
             ))}

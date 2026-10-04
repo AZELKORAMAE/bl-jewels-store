@@ -9,8 +9,7 @@ import { AccordionItem } from "@/components/ui/Accordion";
 import { ProductCarousel } from "@/components/ui/ProductCarousel";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { categoryLabel } from "@/lib/constants";
-import { getProduct, getProducts } from "@/lib/data";
+import { categoryName, getCategories, getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 
 export const revalidate = 60;
@@ -33,6 +32,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   const product = await getProduct(slug);
   if (!product) notFound();
 
+  const categories = await getCategories();
   let related = await getProducts({ category: product.category, excludeId: product.id, limit: 10 });
   if (related.length < 4) related = [...related, ...(await getProducts({ featured: true, excludeId: product.id, limit: 8 }))].filter((p, i, a) => a.findIndex((x) => x.id === p.id) === i);
 
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }: { params: Params }) {
       <div className="container pt-6 md:pt-10">
         <Breadcrumbs
           items={[
-            { label: categoryLabel(product.category), href: `/boutique?categorie=${product.category}` },
+            { label: categoryName(categories, product.category), href: `/boutique?categorie=${product.category}` },
             { label: product.name },
           ]}
         />
