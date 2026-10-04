@@ -12,7 +12,7 @@ const U = "https://images.unsplash.com/";
 export const EDITORIAL_IMAGES = {
   // Grand visuel de l'accueil : fichiers dans public/images/hero/ (remplacez-les en gardant le même nom)
   hero: ["/images/hero/accueil-1.jpg", "/images/hero/accueil-2.jpg", "/images/hero/accueil-3.jpg"],
-  pearls: `${U}photo-1763628212781-7d52844cf358`,
+  pearls: "/images/accueil-collection.jpg", // section éditoriale (1re collection)
   ecrin: "/images/accueil-ecrin.jpg",
   atelier: `${U}photo-1606760227091-3dd870d97f1d`,
   auth: `${U}photo-1694062045776-f48d9b6de57e`,
