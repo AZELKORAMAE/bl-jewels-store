@@ -10,11 +10,8 @@ const U = "https://images.unsplash.com/";
 
 /** Visuels éditoriaux de la page d'accueil (remplaçables par vos propres photos). */
 export const EDITORIAL_IMAGES = {
-  hero: [
-    `${U}photo-1613945407943-59cd755fd69e`,
-    `${U}photo-1620656798579-1984d9e87df7`,
-    `${U}photo-1585960622850-ed33c41d6418`,
-  ],
+  // Grand visuel de l'accueil : fichiers dans public/images/hero/ (remplacez-les en gardant le même nom)
+  hero: ["/images/hero/accueil-1.jpg", "/images/hero/accueil-2.jpg", "/images/hero/accueil-3.jpg"],
   pearls: `${U}photo-1763628212781-7d52844cf358`,
   ecrin: `${U}photo-1515562141207-7a88fb7ce338`,
   atelier: `${U}photo-1606760227091-3dd870d97f1d`,
