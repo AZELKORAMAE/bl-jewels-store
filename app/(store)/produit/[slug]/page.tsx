@@ -136,7 +136,7 @@ export default async function ProductPage({ params }: { params: Params }) {
                   </AccordionItem>
                 )}
                 <AccordionItem title="Livraison, échange & retour">
-                  <p>Livraison offerte sous 2 à 5 jours ouvrés, avec paiement à la réception.</p>
+                  <p>Livraison offerte en moins de 24 h, avec paiement à la réception.</p>
                   <p className="mt-3">
                     Pour un échange ou un retour, contactez-nous sur WhatsApp au{" "}
                     <a href="https://wa.me/212655777934" target="_blank" rel="noopener noreferrer" className="text-bordeaux-900 underline underline-offset-4">

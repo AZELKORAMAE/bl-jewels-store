@@ -40,7 +40,7 @@ export function AddToCart({ product }: { product: Product }) {
           <span className="text-or-700">Plus que {product.stock} pièce{product.stock > 1 ? "s" : ""} disponible{product.stock > 1 ? "s" : ""}</span>
         ) : (
           <span className="inline-flex items-center gap-2 text-taupe">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" aria-hidden /> En stock, expédié sous 48 h
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" aria-hidden /> En stock, livré en moins de 24 h
           </span>
         )}
       </p>
