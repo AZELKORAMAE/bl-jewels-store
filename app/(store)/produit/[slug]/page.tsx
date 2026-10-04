@@ -76,8 +76,9 @@ export default async function ProductPage({ params }: { params: Params }) {
           <div className="lg:sticky lg:top-[136px]">
             <Reveal y={16}>
               {product.is_featured && (
-                <p className="mb-3 flex w-fit items-center gap-1.5 bg-or-500 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-bordeaux-950">
-                  <Flame className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Meilleure vente
+                <p className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-or-500 text-bordeaux-950" title="Meilleure vente">
+                  <Flame className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  <span className="sr-only">Meilleure vente</span>
                 </p>
               )}
               {product.collection && (

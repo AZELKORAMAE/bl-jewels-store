@@ -48,8 +48,9 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
         )}
         <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
           {product.is_featured && !soldOut && (
-            <span className="inline-flex items-center gap-1 bg-or-500 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-bordeaux-950">
-              <Flame className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Meilleure vente
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-or-500 text-bordeaux-950" title="Meilleure vente">
+              <Flame className="h-4 w-4" strokeWidth={2} aria-hidden />
+              <span className="sr-only">Meilleure vente</span>
             </span>
           )}
           {product.is_new && !soldOut && (
