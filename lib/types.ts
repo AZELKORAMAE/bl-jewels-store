@@ -22,7 +22,7 @@ export type Product = {
   category: string;
   material: string | null;
   collection_id: string | null;
-  collection?: { name: string; slug: string } | null;
+  collection?: { name: string; slug: string; requires_size?: boolean } | null;
   images: string[];
   stock: number;
   is_featured: boolean;
@@ -92,8 +92,10 @@ export type CartItem = {
   price: number;
   /** Prix initial barré (promotion), si supérieur au prix de vente */
   compareAt?: number | null;
-  /** Taille choisie (5 à 10) si la collection l'exige */
+  /** Taille choisie (5 à 10) si la collection la propose */
   size?: string | null;
+  /** Le produit appartient à une collection qui propose une taille */
+  sizable?: boolean;
   quantity: number;
   stock: number;
 };

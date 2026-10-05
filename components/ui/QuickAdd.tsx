@@ -79,6 +79,7 @@ export function QuickAdd({ product }: { product: Product }) {
       price: product.price,
       compareAt: product.compare_at_price && product.compare_at_price > product.price ? product.compare_at_price : null,
       size: null,
+      sizable: Boolean(product.requires_size),
       stock: product.stock,
     };
     setAdded(true);

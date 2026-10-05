@@ -1,6 +1,6 @@
 "use client";
 
-import { Banknote, LoaderCircle, Lock, ShoppingBag } from "lucide-react";
+import { Banknote, ChevronDown, LoaderCircle, Lock, Ruler, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -45,7 +45,8 @@ const REQUIRED: { key: "full_name" | "phone" | "address" | "city"; message: stri
 
 export function Checkout() {
   const router = useRouter();
-  const { items, ready, subtotal, savings, update, remove, clear } = useCart();
+  const { items, ready, subtotal, savings, update, remove, setSize, clear } = useCart();
+  const sizableMissing = items.filter((i) => i.sizable && !i.size).length;
   const [form, setForm] = useState<Form>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<"full_name" | "phone" | "address" | "city", string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -138,6 +139,15 @@ export function Checkout() {
           <h2 id="cart-title" className="eyebrow mb-6 text-bordeaux-900">
             1. Vos créations
           </h2>
+          {sizableMissing > 0 && (
+            <p role="note" className="mb-4 flex items-start gap-3 border-l-2 border-or-500 bg-or-50 px-4 py-3 text-[14px] text-or-900">
+              <Ruler className="mt-0.5 h-4 w-4 shrink-0 text-or-700" strokeWidth={1.5} />
+              <span>
+                {sizableMissing > 1 ? `${sizableMissing} bijoux de votre panier existent` : "Un bijou de votre panier existe"} en tailles 5 à 10.
+                Indiquez votre taille ci-dessous si vous la connaissez (facultatif) : sinon, nous la confirmerons avec vous sur WhatsApp.
+              </span>
+            </p>
+          )}
           <ul className="divide-y divide-sable border-y border-sable">
             {items.map((item) => (
               <li key={lineKey(item)} className="flex gap-5 py-6">
@@ -151,7 +161,11 @@ export function Checkout() {
                       <Link href={`/produit/${item.slug}`} className="text-[15px] text-encre hover:underline">
                         {item.name}
                       </Link>
-                      {item.size && <p className="mt-0.5 text-[13px] text-taupe">Taille : {item.size}</p>}
+                      {item.sizable ? (
+                        <SizeSelect value={item.size ?? null} onChange={(v) => setSize(lineKey(item), v)} id={`size-${lineKey(item)}`} />
+                      ) : (
+                        item.size && <p className="mt-0.5 text-[13px] text-taupe">Taille : {item.size}</p>
+                      )}
                     </div>
                     <p className="shrink-0 text-right text-[15px] tabular-nums">
                       {item.compareAt && item.compareAt > item.price && (
@@ -348,5 +362,33 @@ function CheckOption({ id, checked, onChange, label, hint }: { id: string; check
         <span className="block text-[12px] text-taupe">{hint}</span>
       </span>
     </label>
+  );
+}
+
+const SIZE_OPTIONS = ["5", "6", "7", "8", "9", "10"];
+
+function SizeSelect({ id, value, onChange }: { id: string; value: string | null; onChange: (v: string | null) => void }) {
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2">
+      <label htmlFor={id} className="text-[12px] uppercase tracking-[0.12em] text-taupe">
+        Taille
+      </label>
+      <div className="relative">
+        <select
+          id={id}
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value || null)}
+          className={`min-h-[40px] cursor-pointer appearance-none border bg-white py-1.5 pl-3 pr-8 text-[14px] tabular-nums focus:border-bordeaux-900 focus:outline-none ${value ? "border-bordeaux-900 text-encre" : "border-or-400 text-taupe"}`}
+        >
+          <option value="">À préciser (facultatif)</option>
+          {SIZE_OPTIONS.map((s) => (
+            <option key={s} value={s}>
+              Taille {s}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-or-700" strokeWidth={1.5} />
+      </div>
+    </div>
   );
 }

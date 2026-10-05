@@ -19,6 +19,7 @@ type CartContextValue = {
   add: (item: Omit<CartItem, "quantity">, quantity?: number, options?: { open?: boolean }) => void;
   update: (key: string, quantity: number) => void;
   remove: (key: string) => void;
+  setSize: (key: string, size: string | null) => void;
   clear: () => void;
 };
 
@@ -76,6 +77,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => prev.filter((i) => lineKey(i) !== key));
   }, []);
 
+  const setSize = useCallback((key: string, size: string | null) => {
+    setItems((prev) => {
+      const line = prev.find((i) => lineKey(i) === key);
+      if (!line) return prev;
+      const updated = { ...line, size };
+      const others = prev.filter((i) => lineKey(i) !== key);
+      const same = others.find((i) => lineKey(i) === lineKey(updated));
+      if (same) {
+        const limit = Math.min(MAX_QTY, Math.max(same.stock, 1));
+        return others.map((i) => (i === same ? { ...i, quantity: Math.min(i.quantity + line.quantity, limit) } : i));
+      }
+      return prev.map((i) => (lineKey(i) === key ? updated : i));
+    });
+  }, []);
+
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartContextValue>(
@@ -91,9 +107,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       add,
       update,
       remove,
+      setSize,
       clear,
     }),
-    [items, ready, isOpen, add, update, remove, clear]
+    [items, ready, isOpen, add, update, remove, setSize, clear]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

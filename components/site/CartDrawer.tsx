@@ -72,7 +72,11 @@ export function CartDrawer() {
                         <Link href={`/produit/${item.slug}`} onClick={close} className="text-[14px] leading-snug text-encre hover:underline">
                           {item.name}
                         </Link>
-                        {item.size && <p className="text-[12px] text-taupe">Taille : {item.size}</p>}
+                        {item.size ? (
+                          <p className="text-[12px] text-taupe">Taille : {item.size}</p>
+                        ) : (
+                          item.sizable && <p className="text-[12px] text-or-700">Taille à préciser à la commande</p>
+                        )}
                         <p className="mt-1 text-[13px] tabular-nums">
                           {item.compareAt && item.compareAt > item.price && (
                             <span className="mr-2 text-taupe line-through">{formatPrice(item.compareAt)}</span>

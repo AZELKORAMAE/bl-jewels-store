@@ -52,10 +52,16 @@ export type ProductQuery = {
   excludeId?: string;
 };
 
-const PRODUCT_SELECT = "*, collection:collections(name, slug)";
+const PRODUCT_SELECT = "*, collection:collections(name, slug, requires_size)";
 
 function normalizeProduct(row: Record<string, unknown>): Product {
-  return { ...(row as Product), price: Number(row.price), compare_at_price: row.compare_at_price == null ? null : Number(row.compare_at_price) };
+  const collection = row.collection as { name: string; slug: string; requires_size?: boolean } | null;
+  return {
+    ...(row as Product),
+    price: Number(row.price),
+    compare_at_price: row.compare_at_price == null ? null : Number(row.compare_at_price),
+    requires_size: Boolean(collection?.requires_size),
+  };
 }
 
 export async function getCollections(): Promise<Collection[]> {
