@@ -132,8 +132,8 @@ export function Checkout() {
   }
 
   return (
-    <form ref={formRef} onSubmit={submit} noValidate className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-      <div className="space-y-12 lg:col-span-7">
+    <form ref={formRef} onSubmit={submit} noValidate className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+      <div className="min-w-0 space-y-12 lg:col-span-7">
         {/* Articles */}
         <section aria-labelledby="cart-title">
           <h2 id="cart-title" className="eyebrow mb-6 text-bordeaux-900">
@@ -156,16 +156,12 @@ export function Checkout() {
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <div className="min-w-0">
                       {item.collection && <p className="font-serif text-[16px] italic text-or-700">{item.collection}</p>}
                       <Link href={`/produit/${item.slug}`} className="text-[15px] text-encre hover:underline">
                         {item.name}
                       </Link>
-                      {item.sizable ? (
-                        <SizeSelect value={item.size ?? null} onChange={(v) => setSize(lineKey(item), v)} id={`size-${lineKey(item)}`} />
-                      ) : (
-                        item.size && <p className="mt-0.5 text-[13px] text-taupe">Taille : {item.size}</p>
-                      )}
+                      {!item.sizable && item.size && <p className="mt-0.5 text-[13px] text-taupe">Taille : {item.size}</p>}
                     </div>
                     <p className="shrink-0 text-right text-[15px] tabular-nums">
                       {item.compareAt && item.compareAt > item.price && (
@@ -174,6 +170,7 @@ export function Checkout() {
                       <span className={item.compareAt && item.compareAt > item.price ? "text-bordeaux-700" : ""}>{formatPrice(item.price * item.quantity)}</span>
                     </p>
                   </div>
+                  {item.sizable && <SizeSelect value={item.size ?? null} onChange={(v) => setSize(lineKey(item), v)} id={`size-${lineKey(item)}`} />}
                   <div className="mt-auto flex items-center justify-between pt-4">
                     <QuantityStepper value={item.quantity} max={Math.min(20, Math.max(item.stock, 1))} onChange={(q) => update(lineKey(item), q)} label={item.name} />
                     <button type="button" onClick={() => remove(lineKey(item))} className="min-h-[44px] cursor-pointer text-[11px] uppercase tracking-[0.15em] text-taupe hover:text-bordeaux-900 hover:underline">
@@ -255,7 +252,7 @@ export function Checkout() {
       </div>
 
       {/* Récapitulatif */}
-      <aside className="lg:col-span-5">
+      <aside className="min-w-0 lg:col-span-5">
         <div className="bg-ivoire p-6 md:p-8 lg:sticky lg:top-[136px]">
           <h2 className="font-serif text-[28px] text-bordeaux-900">Récapitulatif</h2>
           <dl className="mt-6 space-y-3 text-[14px]">
@@ -369,18 +366,18 @@ const SIZE_OPTIONS = ["5", "6", "7", "8", "9", "10"];
 
 function SizeSelect({ id, value, onChange }: { id: string; value: string | null; onChange: (v: string | null) => void }) {
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-2">
+    <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2">
       <label htmlFor={id} className="text-[12px] uppercase tracking-[0.12em] text-taupe">
-        Taille
+        Taille <span className="normal-case tracking-normal">(facultatif)</span>
       </label>
-      <div className="relative">
+      <div className="relative min-w-0 max-w-full">
         <select
           id={id}
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value || null)}
-          className={`min-h-[40px] cursor-pointer appearance-none border bg-white py-1.5 pl-3 pr-8 text-[14px] tabular-nums focus:border-bordeaux-900 focus:outline-none ${value ? "border-bordeaux-900 text-encre" : "border-or-400 text-taupe"}`}
+          className={`min-h-[40px] w-full max-w-[240px] cursor-pointer appearance-none truncate border bg-white py-1.5 pl-3 pr-8 text-[14px] tabular-nums focus:border-bordeaux-900 focus:outline-none ${value ? "border-bordeaux-900 text-encre" : "border-or-400 text-taupe"}`}
         >
-          <option value="">À préciser (facultatif)</option>
+          <option value="">À préciser</option>
           {SIZE_OPTIONS.map((s) => (
             <option key={s} value={s}>
               Taille {s}
