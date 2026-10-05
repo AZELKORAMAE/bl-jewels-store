@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteOrder } from "@/app/admin/actions";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { DeliveryDateForm } from "@/components/admin/DeliveryDateForm";
 import { OrderStatusForm } from "@/components/admin/OrderStatusForm";
 import { Card, PageHeader } from "@/components/admin/ui";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -102,6 +103,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <div className="space-y-6">
           <Card title="Traitement">
             <OrderStatusForm id={order.id} status={order.status} />
+          </Card>
+
+          <Card title="Livraison">
+            <DeliveryDateForm id={order.id} date={order.delivery_date ?? null} />
           </Card>
 
           <Card title="Client">

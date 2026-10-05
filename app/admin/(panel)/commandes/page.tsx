@@ -4,6 +4,7 @@ import { EmptyState, PageHeader } from "@/components/admin/ui";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@/lib/cn";
 import { ORDER_STATUSES } from "@/lib/constants";
+import { formatDayShort, relativeDay } from "@/lib/dates";
 import { formatDate, formatPrice } from "@/lib/format";
 import { getAdmin } from "@/lib/supabase/server";
 import type { Order, OrderStatus } from "@/lib/types";
@@ -97,6 +98,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
                 <tr>
                   <th className="px-5 py-3 font-medium">Commande</th>
                   <th className="px-5 py-3 font-medium">Date</th>
+                  <th className="px-5 py-3 font-medium">Livraison</th>
                   <th className="px-5 py-3 font-medium">Client</th>
                   <th className="px-5 py-3 font-medium">Articles</th>
                   <th className="px-5 py-3 font-medium">Statut</th>
@@ -112,6 +114,16 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
                       </Link>
                     </td>
                     <td className="px-5 py-4 text-taupe">{formatDate(o.created_at, true)}</td>
+                    <td className="px-5 py-4">
+                      {o.delivery_date ? (
+                        <Link href={`/admin/calendrier?jour=${o.delivery_date}`} className="whitespace-nowrap text-encre hover:text-or-700">
+                          {formatDayShort(o.delivery_date)}
+                          <span className="block text-[11px] text-taupe">{relativeDay(o.delivery_date)}</span>
+                        </Link>
+                      ) : (
+                        <span className="text-[12px] text-taupe/70">Non fixée</span>
+                      )}
+                    </td>
                     <td className="px-5 py-4">
                       <p className="text-encre">{o.customer_name}</p>
                       <p className="text-[12px] text-taupe">

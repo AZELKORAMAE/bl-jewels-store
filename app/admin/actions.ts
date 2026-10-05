@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { sendDeliveryReminders } from "@/lib/deliveries";
 import { slugify } from "@/lib/format";
 import { getAdmin } from "@/lib/supabase/server";
 import type { OrderStatus } from "@/lib/types";
@@ -150,6 +151,20 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   revalidatePath("/admin", "layout");
   refreshStore();
   return { ok: true, message: "Statut mis à jour." };
+}
+
+/** Fixe (ou retire) la date de livraison d'une commande ; le rappel 48 h est réarmé. */
+export async function setDeliveryDate(id: string, date: string | null) {
+  const supabase = await requireAdmin();
+  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, message: "Date invalide." };
+  const { error } = await supabase.from("orders").update({ delivery_date: date, delivery_reminder_sent: false }).eq("id", id);
+  if (error) {
+    if (error.code === "42703" || /delivery_date/.test(error.message)) return { ok: false, message: "Exécutez d'abord supabase/livraisons.sql dans Supabase." };
+    return { ok: false, message: error.message };
+  }
+  await sendDeliveryReminders(supabase);
+  revalidatePath("/admin", "layout");
+  return { ok: true, message: date ? "Date de livraison enregistrée." : "Date de livraison retirée." };
 }
 
 /**

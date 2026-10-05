@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, ExternalLink, House, Layers, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, Users, X } from "lucide-react";
+import { Bell, CalendarDays, ExternalLink, House, Layers, LayoutDashboard, LogOut, Menu, Package, ShoppingCart, Users, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/cn";
 const LINKS = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
   { href: "/admin/commandes", label: "Commandes", icon: ShoppingCart, badge: "pending" as const },
+  { href: "/admin/calendrier", label: "Calendrier", icon: CalendarDays, badge: "deliveries" as const },
   { href: "/admin/accueil", label: "Page d'accueil", icon: House },
   { href: "/admin/produits", label: "Produits", icon: Package },
   { href: "/admin/collections", label: "Collections", icon: Layers },
@@ -19,7 +20,7 @@ const LINKS = [
   { href: "/admin/notifications", label: "Notifications", icon: Bell, badge: "unread" as const },
 ];
 
-type Counts = { pending: number; unread: number };
+type Counts = { pending: number; unread: number; deliveries: number };
 
 function NavList({ counts, onNavigate }: { counts: Counts; onNavigate?: () => void }) {
   const pathname = usePathname();

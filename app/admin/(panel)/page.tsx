@@ -1,4 +1,6 @@
-import { AlertTriangle, ArrowRight, Hourglass, ShoppingCart, Users, Wallet } from "lucide-react";
+import { AlertTriangle, ArrowRight, Hourglass, ShoppingCart, Truck, Users, Wallet } from "lucide-react";
+import { daysFromToday } from "@/lib/dates";
+import { getUpcomingDeliveries } from "@/lib/deliveries";
 import Image from "next/image";
 import Link from "next/link";
 import { RevenueChart, type RevenuePoint } from "@/components/admin/RevenueChart";
@@ -18,6 +20,7 @@ const dayKey = (d: Date) => d.toISOString().slice(0, 10);
 
 export default async function DashboardPage() {
   const { supabase } = await getAdmin();
+  const deliveries = (await getUpcomingDeliveries(supabase)) ?? [];
 
   const [{ data: ordersData }, { count: customers }, { data: lowStock }, { data: itemsData }] = await Promise.all([
     supabase
@@ -91,6 +94,20 @@ export default async function DashboardPage() {
         <StatCard label="Commandes" value={String(orders.length)} hint={`${pending} en attente`} icon={ShoppingCart} />
         <StatCard label="Clients" value={String(Math.max(customers ?? 0, uniqueBuyers))} hint={`${customers ?? 0} compte(s) créé(s)`} icon={Users} />
       </div>
+
+      {deliveries.length > 0 && (
+        <Link
+          href="/admin/calendrier"
+          className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-bordeaux-900 bg-bordeaux-900 px-5 py-4 text-[14px] text-ivoire transition-colors hover:bg-bordeaux-800"
+        >
+          <span className="flex items-center gap-3">
+            <Truck className="h-4 w-4 text-or-300" strokeWidth={1.5} />
+            {deliveries.length} commande{deliveries.length > 1 ? "s" : ""} à livrer dans les 48 h
+            {deliveries.some((d) => daysFromToday(d.delivery_date as string) < 0) && <span className="rounded bg-bordeaux-400 px-2 py-0.5 text-[11px] font-semibold">dont en retard</span>}
+          </span>
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      )}
 
       {pending > 0 && (
         <Link

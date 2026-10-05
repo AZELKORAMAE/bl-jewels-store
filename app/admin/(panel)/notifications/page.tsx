@@ -1,4 +1,4 @@
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Truck } from "lucide-react";
 import Link from "next/link";
 import { markNotificationsRead } from "@/app/admin/actions";
 import { EmptyState, PageHeader } from "@/components/admin/ui";
@@ -39,7 +39,7 @@ export default async function NotificationsPage() {
             <li key={n.id} className="border-b border-sable last:border-0">
               <Link href={n.order_id ? `/admin/commandes/${n.order_id}` : "#"} className={`flex items-start gap-4 px-5 py-4 transition-colors hover:bg-ivoire ${n.is_read ? "" : "bg-or-50/60"}`}>
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bordeaux-900 text-or-300">
-                  <ShoppingCart className="h-4 w-4" strokeWidth={1.5} />
+                  {n.type === "delivery_soon" ? <Truck className="h-4 w-4" strokeWidth={1.5} /> : <ShoppingCart className="h-4 w-4" strokeWidth={1.5} />}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2 text-[14px] font-medium text-encre">

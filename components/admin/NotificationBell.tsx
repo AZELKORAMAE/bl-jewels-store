@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, BellRing, ShoppingCart, X } from "lucide-react";
+import { Bell, BellRing, ShoppingCart, Truck, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -142,7 +142,7 @@ export function NotificationBell({ initial, unread: initialUnread }: { initial: 
                       className={`flex gap-3 px-4 py-3 transition-colors hover:bg-ivoire ${n.is_read ? "" : "bg-or-50/60"}`}
                     >
                       <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bordeaux-900 text-or-300">
-                        <ShoppingCart className="h-4 w-4" strokeWidth={1.5} />
+                        {n.type === "delivery_soon" ? <Truck className="h-4 w-4" strokeWidth={1.5} /> : <ShoppingCart className="h-4 w-4" strokeWidth={1.5} />}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-2 text-[13px] font-medium text-encre">

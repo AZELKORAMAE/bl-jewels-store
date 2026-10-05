@@ -66,6 +66,9 @@ export type Order = {
   receipt_name?: string | null;
   show_price_on_receipt?: boolean;
   is_gift?: boolean;
+  /** Date de livraison prévue (AAAA-MM-JJ), fixée par l'admin */
+  delivery_date?: string | null;
+  delivery_reminder_sent?: boolean;
   created_at: string;
   order_items?: OrderItem[];
 };
