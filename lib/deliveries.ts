@@ -5,7 +5,7 @@ import type { Order } from "./types";
 
 export type DeliveryRow = Pick<Order, "id" | "order_number" | "customer_name" | "city" | "phone" | "total" | "status" | "delivery_date">;
 
-const OPEN_STATUSES = ["pending", "confirmed", "shipped"];
+const OPEN_STATUSES = ["pending", "confirmed", "postponed", "shipped"];
 
 /**
  * Commandes à livrer dans les 48 h (aujourd'hui, demain, après-demain) + celles en retard,
@@ -48,4 +48,6 @@ export async function sendDeliveryReminders(supabase: SupabaseClient) {
     }))
   );
   await supabase.from("orders").update({ delivery_reminder_sent: true }).in("id", data.map((o) => o.id));
+  // Une commande reportée qui arrive à 48 h de sa livraison redevient « Confirmée »
+  await supabase.from("orders").update({ status: "confirmed" }).in("id", data.map((o) => o.id)).eq("status", "postponed");
 }

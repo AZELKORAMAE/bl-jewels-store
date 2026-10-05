@@ -33,7 +33,7 @@ export type Product = {
   created_at?: string;
 };
 
-export type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+export type OrderStatus = "pending" | "confirmed" | "postponed" | "shipped" | "delivered" | "cancelled";
 
 export type OrderItem = {
   id?: string;

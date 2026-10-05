@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { addDays, todayISO } from "@/lib/dates";
 import { sendDeliveryReminders } from "@/lib/deliveries";
 import { slugify } from "@/lib/format";
 import { getAdmin } from "@/lib/supabase/server";
@@ -141,7 +142,7 @@ export async function deleteCollection(id: string) {
 }
 
 // ---------------------------------------------------------------- Commandes
-const STATUSES: OrderStatus[] = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
+const STATUSES: OrderStatus[] = ["pending", "confirmed", "postponed", "shipped", "delivered", "cancelled"];
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {
   const supabase = await requireAdmin();
@@ -157,14 +158,27 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
 export async function setDeliveryDate(id: string, date: string | null) {
   const supabase = await requireAdmin();
   if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { ok: false, message: "Date invalide." };
-  const { error } = await supabase.from("orders").update({ delivery_date: date, delivery_reminder_sent: false }).eq("id", id);
+
+  // Au-delà de 48 h → « Reportée » ; dans les 48 h (ou sans date) une commande reportée redevient « Confirmée ».
+  // Une commande livrée ou annulée garde son statut.
+  const { data: current } = await supabase.from("orders").select("status").eq("id", id).maybeSingle();
+  const status = current?.status as OrderStatus | undefined;
+  const update: { delivery_date: string | null; delivery_reminder_sent: boolean; status?: OrderStatus } = { delivery_date: date, delivery_reminder_sent: false };
+  if (status && status !== "delivered" && status !== "cancelled") {
+    if (date && date > addDays(todayISO(), 2)) update.status = "postponed";
+    else if (status === "postponed") update.status = "confirmed";
+  }
+
+  const { error } = await supabase.from("orders").update(update).eq("id", id);
   if (error) {
     if (error.code === "42703" || /delivery_date/.test(error.message)) return { ok: false, message: "Exécutez d'abord supabase/livraisons.sql dans Supabase." };
+    if (error.code === "23514") return { ok: false, message: "Exécutez d'abord supabase/statut-reportee.sql dans Supabase (statut « Reportée »)." };
     return { ok: false, message: error.message };
   }
   await sendDeliveryReminders(supabase);
   revalidatePath("/admin", "layout");
-  return { ok: true, message: date ? "Date de livraison enregistrée." : "Date de livraison retirée." };
+  const suffix = update.status === "postponed" ? " La commande passe en « Reportée »." : update.status === "confirmed" ? " La commande repasse en « Confirmée »." : "";
+  return { ok: true, message: (date ? "Date de livraison enregistrée." : "Date de livraison retirée.") + suffix };
 }
 
 /**

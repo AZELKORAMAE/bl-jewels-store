@@ -11,7 +11,7 @@ import { getAdmin } from "@/lib/supabase/server";
 export const metadata = { title: "Calendrier des livraisons" };
 
 const WEEKDAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-const OPEN = ["pending", "confirmed", "shipped"];
+const OPEN = ["pending", "confirmed", "postponed", "shipped"];
 
 type SP = Promise<{ mois?: string; jour?: string }>;
 

@@ -120,7 +120,7 @@ create table if not exists public.orders (
   shipping numeric(12, 2) not null default 0,
   total numeric(12, 2) not null default 0,
   status text not null default 'pending'
-    check (status in ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')),
+    check (status in ('pending', 'confirmed', 'postponed', 'shipped', 'delivered', 'cancelled')),
   payment_method text not null default 'cod',
   created_at timestamptz not null default now()
 );
@@ -632,3 +632,11 @@ alter table public.orders add column if not exists delivery_date date;
 alter table public.orders add column if not exists delivery_reminder_sent boolean not null default false;
 
 create index if not exists orders_delivery_date_idx on public.orders (delivery_date);
+
+-- ---------------------------------------------------------------------
+--  STATUT « REPORTÉE » (bases existantes)
+-- ---------------------------------------------------------------------
+alter table public.orders drop constraint if exists orders_status_check;
+alter table public.orders
+  add constraint orders_status_check
+  check (status in ('pending', 'confirmed', 'postponed', 'shipped', 'delivered', 'cancelled'));

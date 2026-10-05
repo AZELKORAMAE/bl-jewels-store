@@ -55,6 +55,7 @@ export const SORT_OPTIONS = [
 export const ORDER_STATUSES: Record<OrderStatus, { label: string; tone: string }> = {
   pending: { label: "En attente", tone: "bg-or-100 text-or-800 ring-or-300" },
   confirmed: { label: "Confirmée", tone: "bg-bordeaux-50 text-bordeaux-700 ring-bordeaux-200" },
+  postponed: { label: "Reportée", tone: "bg-sky-50 text-sky-800 ring-sky-200" },
   shipped: { label: "Expédiée", tone: "bg-sable text-encre ring-or-200" },
   delivered: { label: "Livrée", tone: "bg-emerald-50 text-emerald-800 ring-emerald-200" },
   cancelled: { label: "Annulée", tone: "bg-neutral-100 text-neutral-600 ring-neutral-300" },
