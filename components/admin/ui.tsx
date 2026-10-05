@@ -8,7 +8,7 @@ export function PageHeader({ title, description, children }: { title: string; de
         <h1 className="font-serif text-[34px] font-light leading-tight text-bordeaux-900 md:text-[40px]">{title}</h1>
         {description && <p className="mt-1 text-[14px] text-taupe">{description}</p>}
       </div>
-      {children && <div className="flex flex-wrap gap-3">{children}</div>}
+      {children && <div className="flex flex-wrap items-center gap-3">{children}</div>}
     </div>
   );
 }

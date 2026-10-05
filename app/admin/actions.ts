@@ -151,6 +151,28 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   return { ok: true, message: "Statut mis à jour." };
 }
 
+/**
+ * Supprime une commande (et ses notifications, supprimées en cascade par la base).
+ * Si elle n'était ni livrée ni annulée, les articles sont remis en stock avant suppression.
+ */
+export async function deleteOrder(id: string) {
+  const supabase = await requireAdmin();
+  const { data: order, error: readError } = await supabase.from("orders").select("status").eq("id", id).maybeSingle();
+  if (readError || !order) return { ok: false, message: "Commande introuvable." };
+
+  if (order.status !== "delivered" && order.status !== "cancelled") {
+    // Le passage à « annulée » déclenche la remise en stock (trigger orders_restock)
+    const { error } = await supabase.from("orders").update({ status: "cancelled" }).eq("id", id);
+    if (error) return { ok: false, message: error.message };
+  }
+
+  const { error } = await supabase.from("orders").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/admin", "layout");
+  refreshStore();
+  return { ok: true, message: "Commande supprimée." };
+}
+
 // ----------------------------------------------------------- Notifications
 export async function markNotificationsRead(ids?: string[]) {
   const supabase = await requireAdmin();

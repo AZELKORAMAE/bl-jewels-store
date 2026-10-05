@@ -2,6 +2,8 @@ import { ArrowLeft, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { deleteOrder } from "@/app/admin/actions";
+import { DeleteButton } from "@/components/admin/DeleteButton";
 import { OrderStatusForm } from "@/components/admin/OrderStatusForm";
 import { Card, PageHeader } from "@/components/admin/ui";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -31,6 +33,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </Link>
       <PageHeader title={`Commande ${order.order_number}`} description={`Passée le ${formatDate(order.created_at, true)}`}>
         <StatusBadge status={order.status} />
+        <DeleteButton action={deleteOrder.bind(null, order.id)} label="Supprimer la commande" redirectTo="/admin/commandes" />
       </PageHeader>
 
       <div className="grid gap-6 xl:grid-cols-3">
