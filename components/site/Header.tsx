@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/ui/Logo";
+import { CART_BUMP_EVENT } from "@/components/ui/QuickAdd";
 import { useCart } from "@/lib/cart";
 import { cn } from "@/lib/cn";
 import { useEscape, useLockBody } from "@/lib/hooks";
@@ -22,6 +23,14 @@ export function Header({ collections }: { collections: NavCollection[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [bump, setBump] = useState(0);
+
+  // Rebond de l'icône panier quand un produit y « atterrit » (ajout rapide)
+  useEffect(() => {
+    const onBump = () => setBump((n) => n + 1);
+    window.addEventListener(CART_BUMP_EVENT, onBump);
+    return () => window.removeEventListener(CART_BUMP_EVENT, onBump);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -99,11 +108,20 @@ export function Header({ collections }: { collections: NavCollection[] }) {
             </Link>
             <button
               type="button"
+              id="header-cart"
               onClick={openCart}
               aria-label={`Panier${ready && count ? `, ${count} article${count > 1 ? "s" : ""}` : ""}`}
               className="relative -mr-2 flex h-11 w-11 cursor-pointer items-center justify-center text-bordeaux-900 transition-colors hover:text-or-700"
             >
-              <ShoppingBag className="h-[19px] w-[19px]" strokeWidth={1.4} />
+              <motion.span
+                key={bump}
+                initial={bump ? { scale: 1 } : false}
+                animate={bump ? { scale: [1, 1.35, 0.9, 1.1, 1] } : undefined}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                className="flex"
+              >
+                <ShoppingBag className="h-[19px] w-[19px]" strokeWidth={1.4} />
+              </motion.span>
               <AnimatePresence>
                 {ready && count > 0 && (
                   <motion.span

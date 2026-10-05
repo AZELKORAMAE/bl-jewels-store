@@ -16,7 +16,7 @@ type CartContextValue = {
   isOpen: boolean;
   open: () => void;
   close: () => void;
-  add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
+  add: (item: Omit<CartItem, "quantity">, quantity?: number, options?: { open?: boolean }) => void;
   update: (key: string, quantity: number) => void;
   remove: (key: string) => void;
   clear: () => void;
@@ -48,7 +48,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, [items, ready]);
 
-  const add = useCallback<CartContextValue["add"]>((item, quantity = 1) => {
+  const add = useCallback<CartContextValue["add"]>((item, quantity = 1, options) => {
     setItems((prev) => {
       const limit = Math.min(MAX_QTY, Math.max(item.stock, 1));
       const key = lineKey(item);
@@ -60,7 +60,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { ...item, quantity: Math.min(quantity, limit) }];
     });
-    setIsOpen(true);
+    // Le panier latéral s'ouvre sauf pour l'ajout rapide depuis une carte produit
+    if (options?.open !== false) setIsOpen(true);
   }, []);
 
   const update = useCallback((key: string, quantity: number) => {
