@@ -78,8 +78,8 @@ export function CollectionForm({ collection }: { collection?: Collection }) {
               <input id="sort_order" name="sort_order" inputMode="numeric" defaultValue={collection?.sort_order ?? 0} className="field rounded-md" />
             </div>
             <Toggle name="is_featured" label="Mise en avant sur l'accueil" defaultChecked={collection?.is_featured ?? true} />
-            <Toggle name="requires_size" label="Taille obligatoire (5 à 10)" defaultChecked={collection?.requires_size ?? false} />
-            <p className="-mt-3 text-[12px] text-taupe">Le client devra choisir une taille pour chaque produit de cette collection (ex. bagues).</p>
+            <Toggle name="requires_size" label="Proposer le choix de la taille (5 à 10)" defaultChecked={collection?.requires_size ?? false} />
+            <p className="-mt-3 text-[12px] text-taupe">Le client pourra indiquer sa taille (facultatif) pour chaque produit de cette collection, par exemple les bagues.</p>
           </div>
         </Card>
         <div className="space-y-3 rounded-lg border border-sable bg-white p-4">

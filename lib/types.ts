@@ -6,7 +6,7 @@ export type Collection = {
   image_url: string | null;
   is_featured: boolean;
   sort_order: number;
-  /** Taille obligatoire (5 à 10) pour les produits de la collection */
+  /** Choix de taille (5 à 10, facultatif) proposé pour les produits de la collection */
   requires_size?: boolean;
   created_at?: string;
 };
@@ -28,7 +28,7 @@ export type Product = {
   is_featured: boolean;
   is_new: boolean;
   is_active: boolean;
-  /** Hérité de la collection : le client doit choisir une taille */
+  /** Hérité de la collection : le client peut choisir une taille */
   requires_size?: boolean;
   created_at?: string;
 };

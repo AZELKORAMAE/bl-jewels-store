@@ -1,7 +1,7 @@
 -- =====================================================================
---  BL JEWELS — Tailles (5 à 10) pour les collections qui l'exigent
---  Option « Taille obligatoire » dans Admin → Collections ; la taille choisie
---  est enregistrée avec chaque article commandé.
+--  BL JEWELS — Choix de taille (5 à 10, facultatif) par collection
+--  Option « Proposer le choix de la taille » dans Admin → Collections ;
+--  la taille choisie (si le client en choisit une) est enregistrée avec l'article.
 --  À exécuter une fois dans Supabase → SQL Editor (ré-exécutable).
 -- =====================================================================
 
@@ -76,15 +76,11 @@ begin
       raise exception 'Stock insuffisant pour « % » (il en reste %).', v_product.name, greatest(v_product.stock, 0);
     end if;
 
-    -- Taille obligatoire (5 à 10) pour les collections qui l'exigent
+    -- Taille facultative (5 à 10), proposée pour les collections qui ont l'option
     v_requires_size := false;
     select coalesce(c.requires_size, false) into v_requires_size from public.collections c where c.id = v_product.collection_id;
     v_size := nullif(trim(coalesce(v_item ->> 'size', '')), '');
-    if coalesce(v_requires_size, false) then
-      if v_size is null or v_size !~ '^(5|6|7|8|9|10)$' then
-        raise exception 'Merci de choisir une taille (de 5 à 10) pour « % ».', v_product.name;
-      end if;
-    else
+    if not coalesce(v_requires_size, false) or (v_size is not null and v_size !~ '^(5|6|7|8|9|10)$') then
       v_size := null;
     end if;
 
