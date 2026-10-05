@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { QuantityStepper } from "@/components/site/CartDrawer";
 import { PhoneInput } from "@/components/ui/PhoneInput";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -94,7 +94,7 @@ export function Checkout() {
     setSubmitting(true);
     const { data, error } = await createClient().rpc("place_order", {
       p_customer: form,
-      p_items: items.map((i) => ({ product_id: i.productId, quantity: i.quantity })),
+      p_items: items.map((i) => ({ product_id: i.productId, quantity: i.quantity, size: i.size ?? null })),
     });
     if (error || !data) {
       setSubmitting(false);
@@ -140,7 +140,7 @@ export function Checkout() {
           </h2>
           <ul className="divide-y divide-sable border-y border-sable">
             {items.map((item) => (
-              <li key={item.productId} className="flex gap-5 py-6">
+              <li key={lineKey(item)} className="flex gap-5 py-6">
                 <Link href={`/produit/${item.slug}`} className="relative h-28 w-28 shrink-0 overflow-hidden bg-[#F6F1EB] md:h-32 md:w-32">
                   {item.image && <Image src={item.image} alt={item.name} fill sizes="128px" className="object-cover mix-blend-multiply" />}
                 </Link>
@@ -151,6 +151,7 @@ export function Checkout() {
                       <Link href={`/produit/${item.slug}`} className="text-[15px] text-encre hover:underline">
                         {item.name}
                       </Link>
+                      {item.size && <p className="mt-0.5 text-[13px] text-taupe">Taille : {item.size}</p>}
                     </div>
                     <p className="shrink-0 text-right text-[15px] tabular-nums">
                       {item.compareAt && item.compareAt > item.price && (
@@ -160,8 +161,8 @@ export function Checkout() {
                     </p>
                   </div>
                   <div className="mt-auto flex items-center justify-between pt-4">
-                    <QuantityStepper value={item.quantity} max={Math.min(20, Math.max(item.stock, 1))} onChange={(q) => update(item.productId, q)} label={item.name} />
-                    <button type="button" onClick={() => remove(item.productId)} className="min-h-[44px] cursor-pointer text-[11px] uppercase tracking-[0.15em] text-taupe hover:text-bordeaux-900 hover:underline">
+                    <QuantityStepper value={item.quantity} max={Math.min(20, Math.max(item.stock, 1))} onChange={(q) => update(lineKey(item), q)} label={item.name} />
+                    <button type="button" onClick={() => remove(lineKey(item))} className="min-h-[44px] cursor-pointer text-[11px] uppercase tracking-[0.15em] text-taupe hover:text-bordeaux-900 hover:underline">
                       Retirer
                     </button>
                   </div>
@@ -233,7 +234,7 @@ export function Checkout() {
             <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-or-700" strokeWidth={1.4} />
             <div>
               <p className="text-[14px] font-medium text-encre">Paiement à la livraison</p>
-              <p className="mt-1 text-[14px] text-taupe">Vous réglez votre commande en espèces ou par carte au moment de la réception.</p>
+              <p className="mt-1 text-[14px] text-taupe">Vous réglez votre commande en espèces ou par virement bancaire au moment de la réception.</p>
             </div>
           </div>
         </section>

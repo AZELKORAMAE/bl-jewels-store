@@ -84,7 +84,7 @@ export default async function AccountPage() {
                           {item.product_image && <Image src={item.product_image} alt="" fill sizes="48px" className="object-cover mix-blend-multiply" />}
                         </span>
                         <span className="text-[13px]">
-                          {item.product_name} <span className="text-taupe">× {item.quantity}</span>
+                          {item.product_name} <span className="text-taupe">{item.size ? `· T. ${item.size} ` : ""}× {item.quantity}</span>
                         </span>
                       </li>
                     ))}

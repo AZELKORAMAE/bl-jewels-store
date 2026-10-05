@@ -49,6 +49,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <p className="text-[14px] text-encre">{item.product_name}</p>
                     <p className="text-[13px] tabular-nums text-taupe">
                       {formatPrice(item.unit_price)} × {item.quantity}
+                      {item.size && <span className="ml-2 rounded bg-or-100 px-1.5 py-0.5 text-[12px] font-medium text-or-800">Taille {item.size}</span>}
                     </p>
                   </div>
                   <p className="text-[14px] font-medium tabular-nums">{formatPrice(item.line_total)}</p>

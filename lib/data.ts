@@ -152,13 +152,17 @@ export function getNewArrivals(limit = 12) {
 
 export async function getProduct(slug: string): Promise<Product | null> {
   if (!isSupabaseConfigured) return demoProducts.find((p) => p.slug === slug) ?? null;
-  const { data } = await createPublicClient()
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .maybeSingle();
-  return data ? normalizeProduct(data) : null;
+  const supabase = createPublicClient();
+  const { data } = await supabase.from("products").select(PRODUCT_SELECT).eq("slug", slug).eq("is_active", true).maybeSingle();
+  if (!data) return null;
+  const product = normalizeProduct(data);
+
+  // Taille obligatoire héritée de la collection (lecture séparée : sans effet si la colonne n'existe pas encore)
+  if (product.collection_id) {
+    const { data: col } = await supabase.from("collections").select("requires_size").eq("id", product.collection_id).maybeSingle();
+    product.requires_size = Boolean((col as { requires_size?: boolean } | null)?.requires_size);
+  }
+  return product;
 }
 
 function sorter(sort?: string) {

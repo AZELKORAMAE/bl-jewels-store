@@ -3,6 +3,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { CartItem } from "./types";
 
+/** Identifiant de ligne du panier : produit + taille éventuelle. */
+export const lineKey = (i: Pick<CartItem, "productId" | "size">) => (i.size ? `${i.productId}:${i.size}` : i.productId);
+
 type CartContextValue = {
   items: CartItem[];
   count: number;
@@ -14,8 +17,8 @@ type CartContextValue = {
   open: () => void;
   close: () => void;
   add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
-  update: (productId: string, quantity: number) => void;
-  remove: (productId: string) => void;
+  update: (key: string, quantity: number) => void;
+  remove: (key: string) => void;
   clear: () => void;
 };
 
@@ -48,10 +51,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const add = useCallback<CartContextValue["add"]>((item, quantity = 1) => {
     setItems((prev) => {
       const limit = Math.min(MAX_QTY, Math.max(item.stock, 1));
-      const existing = prev.find((i) => i.productId === item.productId);
+      const key = lineKey(item);
+      const existing = prev.find((i) => lineKey(i) === key);
       if (existing) {
         return prev.map((i) =>
-          i.productId === item.productId ? { ...i, ...item, quantity: Math.min(i.quantity + quantity, limit) } : i
+          lineKey(i) === key ? { ...i, ...item, quantity: Math.min(i.quantity + quantity, limit) } : i
         );
       }
       return [...prev, { ...item, quantity: Math.min(quantity, limit) }];
@@ -59,16 +63,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsOpen(true);
   }, []);
 
-  const update = useCallback((productId: string, quantity: number) => {
+  const update = useCallback((key: string, quantity: number) => {
     setItems((prev) =>
       prev
-        .map((i) => (i.productId === productId ? { ...i, quantity: Math.min(quantity, MAX_QTY, Math.max(i.stock, 1)) } : i))
+        .map((i) => (lineKey(i) === key ? { ...i, quantity: Math.min(quantity, MAX_QTY, Math.max(i.stock, 1)) } : i))
         .filter((i) => i.quantity > 0)
     );
   }, []);
 
-  const remove = useCallback((productId: string) => {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
+  const remove = useCallback((key: string) => {
+    setItems((prev) => prev.filter((i) => lineKey(i) !== key));
   }, []);
 
   const clear = useCallback(() => setItems([]), []);

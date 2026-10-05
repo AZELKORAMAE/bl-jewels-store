@@ -13,7 +13,7 @@ export type OrderSummary = {
   shipping: number;
   total: number;
   created_at: string;
-  items: { product_name: string; product_image: string | null; unit_price: number; quantity: number; line_total: number }[];
+  items: { product_name: string; product_image: string | null; unit_price: number; quantity: number; line_total: number; size?: string | null }[];
 };
 
 const esc = (v: unknown) =>
@@ -33,7 +33,7 @@ export function orderConfirmationEmail(order: OrderSummary, siteUrl: string) {
                 ${i.product_image ? `<img src="${esc(i.product_image)}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;object-fit:cover;background:#F6F1EB;" />` : ""}
               </td>
               <td style="padding:12px 12px;border-bottom:1px solid #EADFD2;${SANS}font-size:14px;color:#1E1214;">
-                ${esc(i.product_name)}<br /><span style="font-size:12px;color:#6E5F5F;">Quantité : ${i.quantity}</span>
+                ${esc(i.product_name)}<br /><span style="font-size:12px;color:#6E5F5F;">Quantité : ${i.quantity}${i.size ? ` · Taille : ${esc(i.size)}` : ""}</span>
               </td>
               <td align="right" style="padding:12px 0;border-bottom:1px solid #EADFD2;${SANS}font-size:14px;color:#1E1214;white-space:nowrap;">
                 ${esc(formatPrice(i.line_total))}
@@ -127,7 +127,7 @@ export function orderConfirmationEmail(order: OrderSummary, siteUrl: string) {
     `Nous avons bien reçu votre commande ${order.order_number}.`,
     "Un membre de notre équipe va prendre contact avec vous dans les plus brefs délais pour valider votre commande avec vous.",
     "",
-    ...order.items.map((i) => `- ${i.product_name} × ${i.quantity} : ${formatPrice(i.line_total)}`),
+    ...order.items.map((i) => `- ${i.product_name}${i.size ? ` (taille ${i.size})` : ""} × ${i.quantity} : ${formatPrice(i.line_total)}`),
     `Total à régler à la livraison : ${formatPrice(order.total)}`,
     `Livraison : ${order.address}, ${order.city}`,
     "",

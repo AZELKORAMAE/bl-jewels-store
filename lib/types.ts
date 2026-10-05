@@ -6,6 +6,8 @@ export type Collection = {
   image_url: string | null;
   is_featured: boolean;
   sort_order: number;
+  /** Taille obligatoire (5 à 10) pour les produits de la collection */
+  requires_size?: boolean;
   created_at?: string;
 };
 
@@ -26,6 +28,8 @@ export type Product = {
   is_featured: boolean;
   is_new: boolean;
   is_active: boolean;
+  /** Hérité de la collection : le client doit choisir une taille */
+  requires_size?: boolean;
   created_at?: string;
 };
 
@@ -39,6 +43,7 @@ export type OrderItem = {
   unit_price: number;
   quantity: number;
   line_total: number;
+  size?: string | null;
 };
 
 export type Order = {
@@ -84,6 +89,8 @@ export type CartItem = {
   price: number;
   /** Prix initial barré (promotion), si supérieur au prix de vente */
   compareAt?: number | null;
+  /** Taille choisie (5 à 10) si la collection l'exige */
+  size?: string | null;
   quantity: number;
   stock: number;
 };

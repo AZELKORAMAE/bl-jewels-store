@@ -45,6 +45,9 @@ export default async function AdminCollectionsPage({ searchParams }: { searchPar
               <Link href={`/admin/collections/${c.id}`} className="group block overflow-hidden rounded-lg border border-sable bg-white transition-shadow hover:shadow-lg hover:shadow-bordeaux-950/5">
                 <div className="relative aspect-[16/10] overflow-hidden bg-bordeaux-900">
                   {c.image_url && <Image src={c.image_url} alt="" fill sizes="(min-width:1280px) 30vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />}
+                  {c.requires_size && (
+                    <span className="absolute right-3 top-3 rounded bg-bordeaux-900 px-2 py-0.5 text-[10px] uppercase tracking-wider text-or-200">Tailles 5–10</span>
+                  )}
                   {c.is_featured && (
                     <span className="absolute left-3 top-3 rounded bg-white/95 px-2 py-0.5 text-[10px] uppercase tracking-wider text-bordeaux-900">Accueil</span>
                   )}

@@ -56,7 +56,10 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
               </div>
               <div className="flex-1">
                 <p className="text-[14px] text-encre">{item.product_name}</p>
-                <p className="text-[13px] text-taupe">Quantité : {item.quantity}</p>
+                <p className="text-[13px] text-taupe">
+                  Quantité : {item.quantity}
+                  {item.size && <> · Taille : {item.size}</>}
+                </p>
               </div>
               <p className="text-[14px] tabular-nums">{formatPrice(item.line_total)}</p>
             </li>

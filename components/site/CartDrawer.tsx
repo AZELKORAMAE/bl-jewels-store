@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { useCart } from "@/lib/cart";
+import { lineKey, useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { useEscape, useLockBody } from "@/lib/hooks";
 
@@ -63,7 +63,7 @@ export function CartDrawer() {
               <>
                 <ul className="flex-1 divide-y divide-sable overflow-y-auto px-6">
                   {items.map((item) => (
-                    <li key={item.productId} className="flex gap-4 py-6">
+                    <li key={lineKey(item)} className="flex gap-4 py-6">
                       <Link href={`/produit/${item.slug}`} onClick={close} className="relative h-24 w-24 shrink-0 overflow-hidden bg-[#F6F1EB]">
                         {item.image && <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover mix-blend-multiply" />}
                       </Link>
@@ -72,6 +72,7 @@ export function CartDrawer() {
                         <Link href={`/produit/${item.slug}`} onClick={close} className="text-[14px] leading-snug text-encre hover:underline">
                           {item.name}
                         </Link>
+                        {item.size && <p className="text-[12px] text-taupe">Taille : {item.size}</p>}
                         <p className="mt-1 text-[13px] tabular-nums">
                           {item.compareAt && item.compareAt > item.price && (
                             <span className="mr-2 text-taupe line-through">{formatPrice(item.compareAt)}</span>
@@ -82,12 +83,12 @@ export function CartDrawer() {
                           <QuantityStepper
                             value={item.quantity}
                             max={Math.min(20, Math.max(item.stock, 1))}
-                            onChange={(q) => update(item.productId, q)}
+                            onChange={(q) => update(lineKey(item), q)}
                             label={item.name}
                           />
                           <button
                             type="button"
-                            onClick={() => remove(item.productId)}
+                            onClick={() => remove(lineKey(item))}
                             className="min-h-[44px] cursor-pointer text-[11px] uppercase tracking-[0.15em] text-taupe underline-offset-4 hover:text-bordeaux-900 hover:underline"
                           >
                             Retirer

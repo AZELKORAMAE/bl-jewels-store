@@ -117,6 +117,7 @@ export async function saveCollection(_: ActionState, fd: FormData): Promise<Acti
     image_url: str(fd, "image_url") || null,
     sort_order: num(fd, "sort_order") ?? 0,
     is_featured: fd.get("is_featured") === "on",
+    requires_size: fd.get("requires_size") === "on",
   };
 
   const { error } = id ? await supabase.from("collections").update(payload).eq("id", id) : await supabase.from("collections").insert(payload);
