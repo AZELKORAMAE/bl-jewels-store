@@ -68,7 +68,7 @@ export function Checkout() {
     });
   }, []);
 
-  const set = (key: "full_name" | "address" | "city" | "country" | "receipt_name") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const set = (key: "full_name" | "address" | "city" | "receipt_name") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
     if (key in errors) setErrors((er) => ({ ...er, [key]: undefined }));
   };
@@ -191,8 +191,7 @@ export function Checkout() {
               required
             />
             <Field label="Adresse" name="address" value={form.address} onChange={set("address")} error={errors.address} autoComplete="street-address" required className="sm:col-span-2" />
-            <Field label="Ville" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required />
-            <Field label="Pays" name="country" value={form.country} onChange={set("country")} autoComplete="country-name" />
+            <Field label="Ville" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required className="sm:col-span-2" />
             <div className="sm:col-span-2">
               <label htmlFor="receipt_name" className="field-label">
                 Nom sur le reçu <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
