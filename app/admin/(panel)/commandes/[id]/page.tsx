@@ -69,6 +69,25 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <p className="mt-4 rounded-md bg-ivoire px-3 py-2 text-[13px] text-taupe">Paiement : à la livraison</p>
           </Card>
 
+          <Card title="Reçu">
+            <dl className="grid gap-4 text-[14px] sm:grid-cols-3">
+              <div>
+                <dt className="text-[12px] uppercase tracking-[0.12em] text-taupe">Nom sur le reçu</dt>
+                <dd className="mt-1 text-encre">{order.receipt_name || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-[12px] uppercase tracking-[0.12em] text-taupe">Prix sur le reçu</dt>
+                <dd className={`mt-1 font-medium ${order.show_price_on_receipt === false ? "text-bordeaux-700" : "text-encre"}`}>
+                  {order.show_price_on_receipt === false ? "Non — reçu sans prix" : "Oui"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[12px] uppercase tracking-[0.12em] text-taupe">Cadeau</dt>
+                <dd className={`mt-1 font-medium ${order.is_gift ? "text-or-700" : "text-encre"}`}>{order.is_gift ? "Oui" : "Non"}</dd>
+              </div>
+            </dl>
+          </Card>
+
           {order.notes && (
             <Card title="Message du client">
               <p className="whitespace-pre-line text-[14px] leading-relaxed text-encre">{order.notes}</p>
@@ -84,11 +103,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <Card title="Client">
             <p className="text-[15px] font-medium text-encre">{order.customer_name}</p>
             <ul className="mt-4 space-y-3 text-[14px]">
+              {order.email && (
               <li>
                 <a href={`mailto:${order.email}`} className="flex items-center gap-3 break-all text-encre hover:text-or-700">
                   <Mail className="h-4 w-4 shrink-0 text-or-600" strokeWidth={1.5} /> {order.email}
                 </a>
               </li>
+              )}
               <li>
                 <a href={`tel:${order.phone}`} className="flex items-center gap-3 text-encre hover:text-or-700">
                   <Phone className="h-4 w-4 shrink-0 text-or-600" strokeWidth={1.5} /> {order.phone}

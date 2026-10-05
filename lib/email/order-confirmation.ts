@@ -6,7 +6,7 @@ export type OrderSummary = {
   id: string;
   order_number: string;
   customer_name: string;
-  email: string;
+  email: string | null;
   address: string;
   city: string;
   subtotal: number;

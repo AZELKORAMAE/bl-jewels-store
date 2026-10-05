@@ -20,6 +20,7 @@ export async function POST(request: Request) {
   const { data } = await createPublicClient().rpc("get_order_summary", { p_id: id });
   const order = data as OrderSummary | null;
   if (!order) return NextResponse.json({ ok: false, error: "Commande introuvable" }, { status: 404 });
+  if (!order.email) return NextResponse.json({ ok: true, skipped: "pas d'e-mail" });
 
   // Uniquement pour une commande toute récente : évite les renvois abusifs
   if (Date.now() - new Date(order.created_at).getTime() > 15 * 60 * 1000) {

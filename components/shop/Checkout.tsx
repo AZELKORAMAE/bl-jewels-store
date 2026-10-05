@@ -20,14 +20,26 @@ type Form = {
   city: string;
   postal_code: string;
   country: string;
-  notes: string;
+  receipt_name: string;
+  show_price_on_receipt: boolean;
+  is_gift: boolean;
 };
 
-const EMPTY: Form = { full_name: "", email: "", phone: "", address: "", city: "", postal_code: "", country: "Maroc", notes: "" };
+const EMPTY: Form = {
+  full_name: "",
+  email: "",
+  phone: "",
+  address: "",
+  city: "",
+  postal_code: "",
+  country: "Maroc",
+  receipt_name: "",
+  show_price_on_receipt: true,
+  is_gift: false,
+};
 
-const REQUIRED: { key: keyof Form; message: string }[] = [
+const REQUIRED: { key: "full_name" | "phone" | "address" | "city"; message: string }[] = [
   { key: "full_name", message: "Indiquez votre nom complet." },
-  { key: "email", message: "Indiquez votre adresse e-mail." },
   { key: "phone", message: "Indiquez un numéro de téléphone pour la livraison." },
   { key: "address", message: "Indiquez votre adresse de livraison." },
   { key: "city", message: "Indiquez votre ville." },
@@ -37,7 +49,7 @@ export function Checkout() {
   const router = useRouter();
   const { items, ready, subtotal, savings, update, remove, clear } = useCart();
   const [form, setForm] = useState<Form>(EMPTY);
-  const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<"full_name" | "phone" | "address" | "city", string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
@@ -58,15 +70,14 @@ export function Checkout() {
     });
   }, []);
 
-  const set = (key: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const set = (key: "full_name" | "address" | "city" | "postal_code" | "country" | "receipt_name") => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((f) => ({ ...f, [key]: e.target.value }));
-    if (errors[key]) setErrors((er) => ({ ...er, [key]: undefined }));
+    if (key in errors) setErrors((er) => ({ ...er, [key]: undefined }));
   };
 
   const validate = () => {
     const next: typeof errors = {};
     for (const { key, message } of REQUIRED) if (!form[key].trim()) next[key] = message;
-    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) next.email = "Cette adresse e-mail semble invalide (ex. : nom@exemple.com).";
     if (form.phone && form.phone.replace(/\D/g, "").length < 8) next.phone = "Ce numéro semble trop court.";
     setErrors(next);
     const first = Object.keys(next)[0];
@@ -94,7 +105,7 @@ export function Checkout() {
     }
     const orderId = (data as { id: string }).id;
     // E-mail de confirmation au client (n'empêche pas la commande en cas d'échec)
-    await fetch("/api/commande/confirmation", {
+    if (form.email) await fetch("/api/commande/confirmation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: orderId }),
@@ -169,11 +180,11 @@ export function Checkout() {
           </h2>
           <fieldset className="grid gap-5 sm:grid-cols-2" disabled={submitting}>
             <Field label="Nom complet" name="full_name" value={form.full_name} onChange={set("full_name")} error={errors.full_name} autoComplete="name" required className="sm:col-span-2" />
-            <Field label="E-mail" name="email" type="email" value={form.email} onChange={set("email")} error={errors.email} autoComplete="email" required />
             <PhoneInput
               id="phone"
               label="Téléphone (WhatsApp)"
               value={form.phone}
+              className="sm:col-span-2"
               onChange={(v) => {
                 setForm((f) => ({ ...f, phone: v }));
                 if (errors.phone) setErrors((er) => ({ ...er, phone: undefined }));
@@ -186,10 +197,34 @@ export function Checkout() {
             <Field label="Code postal" name="postal_code" value={form.postal_code} onChange={set("postal_code")} autoComplete="postal-code" />
             <Field label="Pays" name="country" value={form.country} onChange={set("country")} autoComplete="country-name" className="sm:col-span-2" />
             <div className="sm:col-span-2">
-              <label htmlFor="notes" className="field-label">
-                Message ou gravure <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
+              <label htmlFor="receipt_name" className="field-label">
+                Nom sur le reçu <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
               </label>
-              <textarea id="notes" name="notes" rows={3} value={form.notes} onChange={set("notes")} className="field py-3" placeholder="Initiales à graver, instructions de livraison, message cadeau…" />
+              <input
+                id="receipt_name"
+                name="receipt_name"
+                value={form.receipt_name}
+                onChange={set("receipt_name")}
+                className="field"
+                placeholder="Nom à inscrire sur le reçu"
+                autoComplete="off"
+              />
+            </div>
+            <div className="space-y-1 sm:col-span-2">
+              <CheckOption
+                id="show_price_on_receipt"
+                checked={form.show_price_on_receipt}
+                onChange={(v) => setForm((f) => ({ ...f, show_price_on_receipt: v }))}
+                label="Afficher le prix sur le reçu"
+                hint="Décochez pour un reçu sans prix, idéal pour offrir."
+              />
+              <CheckOption
+                id="is_gift"
+                checked={form.is_gift}
+                onChange={(v) => setForm((f) => ({ ...f, is_gift: v }))}
+                label="C'est un cadeau"
+                hint="Nous préparons votre création avec une attention particulière."
+              />
             </div>
           </fieldset>
         </section>
@@ -298,5 +333,23 @@ export function Field({ label, name, value, onChange, error, type = "text", auto
         </p>
       )}
     </div>
+  );
+}
+
+function CheckOption({ id, checked, onChange, label, hint }: { id: string; checked: boolean; onChange: (v: boolean) => void; label: string; hint: string }) {
+  return (
+    <label htmlFor={id} className="flex min-h-[44px] cursor-pointer items-start gap-3 py-2">
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-bordeaux-900"
+      />
+      <span>
+        <span className="block text-[14px] text-encre">{label}</span>
+        <span className="block text-[12px] text-taupe">{hint}</span>
+      </span>
+    </label>
   );
 }

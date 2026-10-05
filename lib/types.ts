@@ -46,7 +46,7 @@ export type Order = {
   order_number: string;
   user_id: string | null;
   customer_name: string;
-  email: string;
+  email: string | null;
   phone: string;
   address: string;
   city: string;
@@ -58,6 +58,9 @@ export type Order = {
   total: number;
   status: OrderStatus;
   payment_method: string;
+  receipt_name?: string | null;
+  show_price_on_receipt?: boolean;
+  is_gift?: boolean;
   created_at: string;
   order_items?: OrderItem[];
 };

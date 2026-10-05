@@ -18,8 +18,8 @@ export default async function ClientsPage() {
   // Clients = acheteurs (avec ou sans compte) + comptes sans commande
   const buyers = new Map<string, Buyer>();
   for (const o of orders ?? []) {
-    const key = o.email.toLowerCase();
-    const b = buyers.get(key) ?? { email: key, name: o.customer_name, phone: o.phone, city: o.city, orders: 0, spent: 0, last: o.created_at, registered: Boolean(o.user_id) };
+    const key = (o.email || o.phone || o.customer_name).toLowerCase();
+    const b = buyers.get(key) ?? { email: o.email ?? "", name: o.customer_name, phone: o.phone, city: o.city, orders: 0, spent: 0, last: o.created_at, registered: Boolean(o.user_id) };
     b.orders += 1;
     if (o.status !== "cancelled") b.spent += Number(o.total);
     if (o.user_id) b.registered = true;
@@ -60,9 +60,13 @@ export default async function ClientsPage() {
                     <p className="text-[12px] text-taupe">{b.registered ? "Compte client" : "Invité"}{b.city ? ` · ${b.city}` : ""}</p>
                   </td>
                   <td className="px-5 py-3">
-                    <a href={`mailto:${b.email}`} className="text-encre hover:text-or-700">
-                      {b.email}
-                    </a>
+                    {b.email ? (
+                      <a href={`mailto:${b.email}`} className="text-encre hover:text-or-700">
+                        {b.email}
+                      </a>
+                    ) : (
+                      <span className="text-taupe">Sans e-mail</span>
+                    )}
                     <p className="text-[12px] text-taupe">{b.phone}</p>
                   </td>
                   <td className="px-5 py-3 text-right tabular-nums">{b.orders}</td>

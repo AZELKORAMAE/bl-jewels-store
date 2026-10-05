@@ -16,7 +16,7 @@ type Summary = {
   id: string;
   order_number: string;
   customer_name: string;
-  email: string;
+  email: string | null;
   address: string;
   city: string;
   subtotal: number;
@@ -42,7 +42,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
         <h1 className="display mt-4 text-[40px] text-bordeaux-900 md:text-[56px]">Merci, {order.customer_name.split(" ")[0]}</h1>
         <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-taupe">
           Votre commande a bien été reçue le {formatDate(order.created_at)}. Notre équipe vous contactera très prochainement pour confirmer la
-          livraison à {order.city}. Un récapitulatif est associé à l&apos;adresse {order.email}.
+          livraison à {order.city}.{order.email && ` Un récapitulatif a été envoyé à ${order.email}.`}
         </p>
       </Reveal>
 
