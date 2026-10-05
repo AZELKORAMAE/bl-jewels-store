@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/format";
 import { getPromo } from "@/lib/pricing";
 import type { Product } from "@/lib/types";
 import { cn } from "@/lib/cn";
+import { QuickAdd } from "./QuickAdd";
 
 type ProductCardProps = {
   product: Product;
@@ -18,10 +19,12 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
   const [main, hover] = product.images;
   const soldOut = product.stock <= 0;
   const promo = getPromo(product.price, product.compare_at_price);
+  const href = `/produit/${product.slug}`;
 
   return (
-    <Link href={`/produit/${product.slug}`} className={cn("group relative block cursor-pointer text-center", className)}>
+    <div className={cn("group relative text-center", className)}>
       <div className="relative aspect-square overflow-hidden bg-[#F6F1EB]">
+        <Link href={href} tabIndex={-1} aria-hidden className="absolute inset-0 block cursor-pointer">
         {main ? (
           <Image
             src={main}
@@ -63,9 +66,10 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
             <span className="ml-auto shrink-0 bg-bordeaux-900 px-2 py-1 text-[11px] font-semibold tabular-nums tracking-wide text-or-200">−{promo.percent} %</span>
           )}
         </div>
-
+        </Link>
+        <QuickAdd product={product} />
       </div>
-      <div className="px-2 pb-2 pt-5">
+      <Link href={href} className="relative block cursor-pointer px-2 pb-2 pt-5">
         {product.collection && (
           <p className="font-serif text-[17px] italic text-or-700 md:text-[18px]">{product.collection.name}</p>
         )}
@@ -86,7 +90,7 @@ export function ProductCard({ product, priority, sizes = "(min-width:1280px) 22v
             {formatPrice(product.price)}
           </span>
         </p>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }
