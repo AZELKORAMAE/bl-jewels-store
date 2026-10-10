@@ -281,7 +281,19 @@ export function OrderModal({
               )}
 
               <button type="submit" disabled={submitting || !lines.length} className="btn-primary mt-5 w-full rounded-md px-4 text-[13px] tracking-[0.12em]">
-                {submitting ? <LoaderCircle className="h-5 w-5 animate-spin" /> : `Valider vos achats · ${formatPrice(total)}`}
+                {submitting ? (
+                  <LoaderCircle className="h-5 w-5 animate-spin" />
+                ) : (
+                  <span className="flex w-full items-center justify-between gap-2">
+                    <span className="whitespace-nowrap">
+                      Valider<span className="hidden sm:inline"> vos achats</span>
+                    </span>
+                    <span className="rounded bg-white/10 px-2.5 py-1 text-[13px] font-semibold tabular-nums tracking-normal text-or-200">{formatPrice(total)}</span>
+                    <span dir="rtl" lang="ar" className="whitespace-nowrap font-sans text-[15px] font-semibold normal-case tracking-normal">
+                      تأكيد الطلب
+                    </span>
+                  </span>
+                )}
               </button>
               <Guarantees className="mt-4" />
             </form>
