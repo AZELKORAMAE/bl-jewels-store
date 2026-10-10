@@ -66,11 +66,21 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
         },
+        // Petite vibration périodique pour attirer l'attention (bouton Commander)
+        attention: {
+          "0%, 78%, 100%": { transform: "translateX(0) rotate(0)" },
+          "80%": { transform: "translateX(-4px) rotate(-1deg)" },
+          "83%": { transform: "translateX(4px) rotate(1deg)" },
+          "86%": { transform: "translateX(-3px) rotate(-0.5deg)" },
+          "89%": { transform: "translateX(3px) rotate(0.5deg)" },
+          "92%": { transform: "translateX(-1px)" },
+        },
       },
       animation: {
         "ken-burns": "ken-burns 7s cubic-bezier(0.22, 1, 0.36, 1) both",
         shimmer: "shimmer 1.6s linear infinite",
         marquee: "marquee 40s linear infinite",
+        attention: "attention 3.5s ease-in-out 1.5s infinite",
       },
     },
   },

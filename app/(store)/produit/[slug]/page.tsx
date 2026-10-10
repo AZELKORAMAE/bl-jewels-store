@@ -1,4 +1,5 @@
-import { Banknote, Flame, Gift, Truck } from "lucide-react";
+import { Flame } from "lucide-react";
+import { Guarantees } from "@/components/shop/Guarantees";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -107,17 +108,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               <div className="my-8 h-px bg-sable" />
               <AddToCart product={product} />
 
-              <ul className="mt-8 space-y-3 text-[14px] text-taupe">
-                <li className="flex items-center gap-3">
-                  <Truck className="h-4 w-4 text-or-600" strokeWidth={1.4} /> Livraison offerte et assurée
-                </li>
-                <li className="flex items-center gap-3">
-                  <Banknote className="h-4 w-4 text-or-600" strokeWidth={1.4} /> Paiement à la livraison
-                </li>
-                <li className="flex items-center gap-3">
-                  <Gift className="h-4 w-4 text-or-600" strokeWidth={1.4} /> Livré dans l&apos;écrin bordeaux signature
-                </li>
-              </ul>
+              <Guarantees className="mt-8" />
 
               <div className="mt-10 border-t border-sable">
                 <AccordionItem title="Description" defaultOpen>

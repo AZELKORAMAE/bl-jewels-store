@@ -83,9 +83,23 @@ export function AddToCart({ product }: { product: Product }) {
           </span>
         )}
       </p>
+      {!soldOut && (
+        <button
+          type="button"
+          onClick={() => setOrderOpen(true)}
+          className="btn-primary mb-3 w-full animate-attention justify-between px-6 text-[13px] shadow-lg shadow-bordeaux-900/25 hover:animate-none"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Zap className="h-4 w-4 text-or-300" strokeWidth={1.8} /> Commander
+          </span>
+          <span dir="rtl" lang="ar" className="font-sans text-[15px] font-semibold normal-case tracking-normal">
+            اطلب الآن
+          </span>
+        </button>
+      )}
       <div className="flex gap-3">
         {!soldOut && <QuantityStepper value={qty} max={max} onChange={(v) => setQty(Math.max(1, v))} label={product.name} />}
-        <button type="button" onClick={onAdd} disabled={soldOut} className="btn-outline flex-1 px-4">
+        <button type="button" onClick={onAdd} disabled={soldOut} className="btn-outline flex-1 whitespace-nowrap px-3 tracking-[0.1em] sm:px-4 sm:tracking-[0.2em]">
           {added ? (
             <>
               <Check className="h-4 w-4" strokeWidth={1.8} /> Ajouté au panier
@@ -97,11 +111,6 @@ export function AddToCart({ product }: { product: Product }) {
           )}
         </button>
       </div>
-      {!soldOut && (
-        <button type="button" onClick={() => setOrderOpen(true)} className="btn-primary mt-3 w-full text-[13px]">
-          <Zap className="h-4 w-4" strokeWidth={1.6} /> Commander
-        </button>
-      )}
       <OrderModal
         open={orderOpen}
         onClose={() => setOrderOpen(false)}

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, CircleUser, LoaderCircle, MapPin, X } from "lucide-react";
+import { Guarantees } from "@/components/shop/Guarantees";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -241,22 +242,32 @@ export function OrderModal({
                     aria-expanded={receiptOpen}
                     className="flex min-h-[44px] w-full cursor-pointer items-center justify-between px-3 text-[13px] text-encre"
                   >
-                    Options du reçu (facultatif)
+                    <span className="flex flex-1 items-center justify-between gap-3 pr-2">
+                      <span>Options du reçu (facultatif)</span>
+                      <span dir="rtl" lang="ar" className="text-taupe">خيارات الوصل (اختياري)</span>
+                    </span>
                     <ChevronDown className={`h-4 w-4 text-or-700 transition-transform ${receiptOpen ? "rotate-180" : ""}`} />
                   </button>
                   {receiptOpen && (
                     <div className="space-y-2 border-t border-sable px-3 pb-3 pt-3">
-                      <label htmlFor="om-receipt" className="block text-[12px] uppercase tracking-[0.12em] text-taupe">
-                        Nom sur le reçu
+                      <label htmlFor="om-receipt" className="flex items-baseline justify-between gap-2 text-[12px] text-taupe">
+                        <span className="uppercase tracking-[0.12em]">Nom sur le reçu</span>
+                        <span dir="rtl" lang="ar" className="text-[13px]">الاسم في الوصل</span>
                       </label>
-                      <input id="om-receipt" value={receiptName} onChange={(e) => setReceiptName(e.target.value)} className="field rounded-md" placeholder="Nom à inscrire sur le reçu" />
+                      <input id="om-receipt" value={receiptName} onChange={(e) => setReceiptName(e.target.value)} className="field rounded-md" placeholder="الاسم في الوصل / Nom sur le reçu" />
                       <label className="flex min-h-[40px] cursor-pointer items-center gap-3 text-[14px] text-encre">
-                        <input type="checkbox" checked={showPrice} onChange={(e) => setShowPrice(e.target.checked)} className="h-5 w-5 accent-bordeaux-900" />
-                        Afficher le prix sur le reçu
+                        <input type="checkbox" checked={showPrice} onChange={(e) => setShowPrice(e.target.checked)} className="h-5 w-5 shrink-0 accent-bordeaux-900" />
+                        <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3">
+                          <span>Afficher le prix sur le reçu</span>
+                          <span dir="rtl" lang="ar" className="text-taupe">إظهار السعر في الوصل</span>
+                        </span>
                       </label>
                       <label className="flex min-h-[40px] cursor-pointer items-center gap-3 text-[14px] text-encre">
-                        <input type="checkbox" checked={isGift} onChange={(e) => setIsGift(e.target.checked)} className="h-5 w-5 accent-bordeaux-900" />
-                        C&apos;est un cadeau
+                        <input type="checkbox" checked={isGift} onChange={(e) => setIsGift(e.target.checked)} className="h-5 w-5 shrink-0 accent-bordeaux-900" />
+                        <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-3">
+                          <span>C&apos;est un cadeau</span>
+                          <span dir="rtl" lang="ar" className="text-taupe">هذه هدية</span>
+                        </span>
                       </label>
                     </div>
                   )}
@@ -272,7 +283,7 @@ export function OrderModal({
               <button type="submit" disabled={submitting || !lines.length} className="btn-primary mt-5 w-full rounded-md px-4 text-[13px] tracking-[0.12em]">
                 {submitting ? <LoaderCircle className="h-5 w-5 animate-spin" /> : `Valider vos achats · ${formatPrice(total)}`}
               </button>
-              <p className="mt-3 text-center text-[12px] text-taupe">Paiement à la livraison · Livraison offerte en moins de 24 h</p>
+              <Guarantees className="mt-4" />
             </form>
           </motion.div>
         </div>
