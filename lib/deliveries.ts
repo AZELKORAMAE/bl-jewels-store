@@ -43,7 +43,7 @@ export async function sendDeliveryReminders(supabase: SupabaseClient) {
     data.map((o) => ({
       type: "delivery_soon",
       title: `Livraison dans 48 h : ${o.order_number}`,
-      message: `${o.customer_name} · ${o.city} · ${formatDayLong(o.delivery_date as string)}`,
+      message: `${o.customer_name}${o.city ? ` · ${o.city}` : ""} · ${formatDayLong(o.delivery_date as string)}`,
       order_id: o.id,
     }))
   );

@@ -19,7 +19,7 @@ export default async function ClientsPage() {
   const buyers = new Map<string, Buyer>();
   for (const o of orders ?? []) {
     const key = (o.email || o.phone || o.customer_name).toLowerCase();
-    const b = buyers.get(key) ?? { email: o.email ?? "", name: o.customer_name, phone: o.phone, city: o.city, orders: 0, spent: 0, last: o.created_at, registered: Boolean(o.user_id) };
+    const b = buyers.get(key) ?? { email: o.email ?? "", name: o.customer_name, phone: o.phone, city: o.city ?? "", orders: 0, spent: 0, last: o.created_at, registered: Boolean(o.user_id) };
     b.orders += 1;
     if (o.status !== "cancelled") b.spent += Number(o.total);
     if (o.user_id) b.registered = true;

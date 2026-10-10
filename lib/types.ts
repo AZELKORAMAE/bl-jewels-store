@@ -54,7 +54,7 @@ export type Order = {
   email: string | null;
   phone: string;
   address: string;
-  city: string;
+  city: string | null;
   postal_code: string | null;
   country: string;
   notes: string | null;

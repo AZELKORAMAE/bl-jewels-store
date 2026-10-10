@@ -5,7 +5,8 @@ import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { OrderModal } from "@/components/shop/OrderModal";
 import { lineKey, useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { useEscape, useLockBody } from "@/lib/hooks";
@@ -13,7 +14,8 @@ import { useEscape, useLockBody } from "@/lib/hooks";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function CartDrawer() {
-  const { items, isOpen, close, update, remove, subtotal, savings, count } = useCart();
+  const { items, isOpen, close, update, remove, subtotal, savings, count, clear } = useCart();
+  const [orderOpen, setOrderOpen] = useState(false);
   const pathname = usePathname();
   const closeBtn = useRef<HTMLButtonElement>(null);
 
@@ -30,6 +32,13 @@ export function CartDrawer() {
   }, [isOpen]);
 
   return (
+    <>
+    <OrderModal
+      open={orderOpen}
+      onClose={() => setOrderOpen(false)}
+      onOrdered={clear}
+      lines={items.map((i) => ({ productId: i.productId, name: i.name, image: i.image, price: i.price, compareAt: i.compareAt, quantity: i.quantity, size: i.size, sizable: i.sizable }))}
+    />
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Votre panier">
@@ -117,9 +126,16 @@ export function CartDrawer() {
                     <span className="text-taupe">Livraison</span>
                     <span className="text-or-700">Offerte</span>
                   </div>
-                  <Link href="/panier" onClick={close} className="btn-primary mt-6 w-full">
-                    Finaliser ma commande
-                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      close();
+                      setOrderOpen(true);
+                    }}
+                    className="btn-primary mt-6 w-full"
+                  >
+                    Commander
+                  </button>
                   <button type="button" onClick={close} className="mt-3 min-h-[44px] w-full cursor-pointer text-[11px] font-medium uppercase tracking-[0.2em] text-bordeaux-900 hover:text-or-700">
                     Continuer mes achats
                   </button>
@@ -130,6 +146,7 @@ export function CartDrawer() {
         </div>
       )}
     </AnimatePresence>
+    </>
   );
 }
 

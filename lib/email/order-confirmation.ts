@@ -8,7 +8,7 @@ export type OrderSummary = {
   customer_name: string;
   email: string | null;
   address: string;
-  city: string;
+  city: string | null;
   subtotal: number;
   shipping: number;
   total: number;
@@ -95,7 +95,7 @@ export function orderConfirmationEmail(order: OrderSummary, siteUrl: string) {
             <tr>
               <td style="padding:24px 36px 8px;${SANS}font-size:13px;line-height:1.6;color:#6E5F5F;">
                 <strong style="color:#1E1214;">Adresse de livraison</strong><br />
-                ${esc(order.address)}, ${esc(order.city)}<br /><br />
+                ${esc(order.address)}${order.city ? `, ${esc(order.city)}` : ""}<br /><br />
                 <strong style="color:#1E1214;">Paiement</strong><br />
                 À la livraison, en toute sérénité.
               </td>
@@ -129,7 +129,7 @@ export function orderConfirmationEmail(order: OrderSummary, siteUrl: string) {
     "",
     ...order.items.map((i) => `- ${i.product_name}${i.size ? ` (taille ${i.size})` : ""} × ${i.quantity} : ${formatPrice(i.line_total)}`),
     `Total à régler à la livraison : ${formatPrice(order.total)}`,
-    `Livraison : ${order.address}, ${order.city}`,
+    `Livraison : ${order.address}${order.city ? `, ${order.city}` : ""}`,
     "",
     "Merci d'avoir choisi BL Jewels.",
     `WhatsApp : ${STORE.phone}`,

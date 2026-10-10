@@ -95,7 +95,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: SP 
                           </span>
                         </div>
                         <p className="mt-1 text-[13px] text-or-100/85">
-                          {o.customer_name} · {o.city}
+                          {o.customer_name}{o.city ? ` · ${o.city}` : ""}
                         </p>
                         <p className="mt-1 text-[12px] text-or-100/60">
                           {formatDayShort(o.delivery_date as string)} · {formatPrice(o.total)}
@@ -204,7 +204,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: SP 
                           <StatusBadge status={o.status} />
                         </div>
                         <p className="mt-1 text-[13px] text-encre">
-                          {o.customer_name} · {o.city}
+                          {o.customer_name}{o.city ? ` · ${o.city}` : ""}
                         </p>
                         <p className="mt-1 flex items-center justify-between text-[12px] text-taupe">
                           <span className="inline-flex items-center gap-1">

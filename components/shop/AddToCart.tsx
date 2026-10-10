@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, ShoppingBag } from "lucide-react";
+import { Check, ShoppingBag, Zap } from "lucide-react";
 import { useState } from "react";
 import { QuantityStepper } from "@/components/site/CartDrawer";
+import { OrderModal } from "@/components/shop/OrderModal";
 import { useCart } from "@/lib/cart";
 import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/types";
@@ -14,6 +15,7 @@ export function AddToCart({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
   const soldOut = product.stock <= 0;
   const max = Math.min(20, Math.max(product.stock, 1));
 
@@ -83,7 +85,7 @@ export function AddToCart({ product }: { product: Product }) {
       </p>
       <div className="flex gap-3">
         {!soldOut && <QuantityStepper value={qty} max={max} onChange={(v) => setQty(Math.max(1, v))} label={product.name} />}
-        <button type="button" onClick={onAdd} disabled={soldOut} className="btn-primary flex-1">
+        <button type="button" onClick={onAdd} disabled={soldOut} className="btn-outline flex-1 px-4">
           {added ? (
             <>
               <Check className="h-4 w-4" strokeWidth={1.8} /> Ajouté au panier
@@ -95,6 +97,27 @@ export function AddToCart({ product }: { product: Product }) {
           )}
         </button>
       </div>
+      {!soldOut && (
+        <button type="button" onClick={() => setOrderOpen(true)} className="btn-primary mt-3 w-full text-[13px]">
+          <Zap className="h-4 w-4" strokeWidth={1.6} /> Commander
+        </button>
+      )}
+      <OrderModal
+        open={orderOpen}
+        onClose={() => setOrderOpen(false)}
+        lines={[
+          {
+            productId: product.id,
+            name: product.name,
+            image: product.images[0] ?? null,
+            price: product.price,
+            compareAt: product.compare_at_price && product.compare_at_price > product.price ? product.compare_at_price : null,
+            quantity: qty,
+            size: product.requires_size ? size : null,
+            sizable: Boolean(product.requires_size),
+          },
+        ]}
+      />
     </div>
   );
 }

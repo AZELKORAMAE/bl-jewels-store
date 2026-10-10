@@ -129,7 +129,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 <span>
                   {order.address}
                   <br />
-                  {[order.postal_code, order.city].filter(Boolean).join(" ")}, {order.country}
+                  {[[order.postal_code, order.city].filter(Boolean).join(" "), order.country].filter(Boolean).join(", ")}
                 </span>
               </li>
             </ul>

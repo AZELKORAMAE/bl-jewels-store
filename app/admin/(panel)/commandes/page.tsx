@@ -82,7 +82,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
                   <p className="mt-2 text-[14px] text-encre">{o.customer_name}</p>
                   <div className="mt-1 flex items-center justify-between text-[13px] text-taupe">
                     <span>
-                      {o.city} · {formatDate(o.created_at)}
+                      {o.city ? `${o.city} · ` : ""}{formatDate(o.created_at)}
                     </span>
                     <span className="tabular-nums text-encre">{formatPrice(o.total)}</span>
                   </div>
@@ -127,7 +127,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: SP })
                     <td className="px-5 py-4">
                       <p className="text-encre">{o.customer_name}</p>
                       <p className="text-[12px] text-taupe">
-                        {o.phone} · {o.city}
+                        {o.phone}{o.city ? ` · ${o.city}` : ""}
                       </p>
                     </td>
                     <td className="px-5 py-4 tabular-nums text-taupe">{o.order_items.reduce((s, i) => s + i.quantity, 0)}</td>

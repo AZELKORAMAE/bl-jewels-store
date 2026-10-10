@@ -182,7 +182,7 @@ export default async function DashboardPage() {
                       </td>
                       <td className="px-5 py-3">
                         <p className="text-encre">{o.customer_name}</p>
-                        <p className="text-[12px] text-taupe">{o.city}</p>
+                        <p className="text-[12px] text-taupe">{o.city ?? ""}</p>
                       </td>
                       <td className="px-5 py-3">
                         <StatusBadge status={o.status} />

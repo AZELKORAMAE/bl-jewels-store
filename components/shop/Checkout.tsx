@@ -40,7 +40,6 @@ const REQUIRED: { key: "full_name" | "phone" | "address" | "city"; message: stri
   { key: "full_name", message: "Indiquez votre nom complet." },
   { key: "phone", message: "Indiquez un numéro de téléphone pour la livraison." },
   { key: "address", message: "Indiquez votre adresse de livraison." },
-  { key: "city", message: "Indiquez votre ville." },
 ];
 
 export function Checkout() {
@@ -203,7 +202,6 @@ export function Checkout() {
               required
             />
             <Field label="Adresse" name="address" value={form.address} onChange={set("address")} error={errors.address} autoComplete="street-address" required className="sm:col-span-2" />
-            <Field label="Ville" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required className="sm:col-span-2" />
             <div className="sm:col-span-2">
               <label htmlFor="receipt_name" className="field-label">
                 Nom sur le reçu <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
