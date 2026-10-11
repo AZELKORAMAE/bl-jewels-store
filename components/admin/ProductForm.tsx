@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { saveProduct, type ActionState } from "@/app/admin/actions";
 import { slugify } from "@/lib/format";
+import { SHIPPING_FEE } from "@/lib/pricing";
 import type { Collection, Product } from "@/lib/types";
 import { ImageUploader } from "./ImageUploader";
 import { PriceFields } from "./PriceFields";
@@ -141,7 +142,7 @@ export function ProductForm({ product, collections }: { product?: Product; colle
             <fieldset className="space-y-1">
               <legend className="field-label">Livraison</legend>
               <Toggle name="free_shipping" label="Livraison gratuite" defaultChecked={product?.free_shipping ?? true} />
-              <p className="text-[12px] leading-relaxed text-taupe">Si désactivée, 35 DH de livraison sont ajoutés à la commande (une seule fois par commande).</p>
+              <p className="text-[12px] leading-relaxed text-taupe">Si désactivée, {SHIPPING_FEE} DH de livraison sont ajoutés à la commande (une seule fois par commande).</p>
             </fieldset>
           </div>
         </Card>

@@ -30,7 +30,7 @@ export type Product = {
   is_active: boolean;
   /** Hérité de la collection : le client peut choisir une taille */
   requires_size?: boolean;
-  /** Livraison gratuite (par défaut) ; sinon 35 DH ajoutés à la commande */
+  /** Livraison gratuite (par défaut) ; sinon 25 DH ajoutés à la commande */
   free_shipping?: boolean;
   created_at?: string;
 };
@@ -98,7 +98,7 @@ export type CartItem = {
   size?: string | null;
   /** Le produit appartient à une collection qui propose une taille */
   sizable?: boolean;
-  /** Produit sans livraison gratuite : 35 DH de livraison */
+  /** Produit sans livraison gratuite : 25 DH de livraison */
   paidShipping?: boolean;
   quantity: number;
   stock: number;

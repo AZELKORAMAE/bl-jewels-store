@@ -1,6 +1,6 @@
 -- =====================================================================
 --  BL JEWELS — Livraison gratuite ou payante, produit par produit
---  Produit non coché « Livraison gratuite » => 35 DH de livraison ajoutés
+--  Produit non coché « Livraison gratuite » => 25 DH de livraison ajoutés
 --  une seule fois à la commande. À exécuter une fois dans Supabase →
 --  SQL Editor (ré-exécutable).
 -- =====================================================================
@@ -96,11 +96,11 @@ begin
     v_count := v_count + v_qty;
   end loop;
 
-  -- Frais de livraison : 35 DH si au moins un produit n'a pas la livraison gratuite
+  -- Frais de livraison : 25 DH si au moins un produit n'a pas la livraison gratuite
   update public.orders
   set subtotal = v_subtotal,
-      shipping = case when v_paid_shipping then 35 else 0 end,
-      total = v_subtotal + case when v_paid_shipping then 35 else 0 end
+      shipping = case when v_paid_shipping then 25 else 0 end,
+      total = v_subtotal + case when v_paid_shipping then 25 else 0 end
   where id = v_order_id;
 
   insert into public.notifications (type, title, message, order_id)
