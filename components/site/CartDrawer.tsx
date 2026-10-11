@@ -82,9 +82,11 @@ export function CartDrawer() {
                           {item.name}
                         </Link>
                         {item.size ? (
-                          <p className="text-[12px] text-taupe">Taille : {item.size}</p>
+                          <p className="text-[12px] text-taupe">Taille : {item.size} · المقاس {item.size}</p>
                         ) : (
-                          item.sizable && <p className="text-[12px] text-or-700">Taille à préciser à la commande</p>
+                          item.sizable && <p className="text-[12px] text-or-700">
+                            Taille à préciser à la commande · <span dir="rtl" lang="ar">المقاس يُحدَّد عند الطلب</span>
+                          </p>
                         )}
                         <p className="mt-1 text-[13px] tabular-nums">
                           {item.compareAt && item.compareAt > item.price && (

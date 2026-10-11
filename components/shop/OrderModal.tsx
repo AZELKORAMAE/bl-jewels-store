@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { PhoneInput } from "@/components/ui/PhoneInput";
+import { WhatsAppIcon } from "@/components/ui/SocialIcons";
+import { whatsappOrderUrl } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/format";
 import { useEscape, useLockBody } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
@@ -178,17 +180,17 @@ export function OrderModal({
                             onChange={(e) => setLines((prev) => prev.map((x, j) => (j === i ? { ...x, size: e.target.value || null } : x)))}
                             className="min-h-[34px] cursor-pointer appearance-none rounded border border-sable bg-white py-1 pl-2 pr-7 text-[12px] text-encre focus:border-bordeaux-900 focus:outline-none"
                           >
-                            <option value="">Taille : à préciser</option>
+                            <option value="">Taille à préciser · المقاس لاحقاً</option>
                             {SIZES.map((s) => (
                               <option key={s} value={s}>
-                                Taille {s}
+                                Taille {s} · المقاس {s}
                               </option>
                             ))}
                           </select>
                           <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-or-700" />
                         </span>
                       ) : (
-                        l.size && <span className="block text-[12px] text-taupe">Taille {l.size}</span>
+                        l.size && <span className="block text-[12px] text-taupe">Taille {l.size} · المقاس {l.size}</span>
                       )}
                     </span>
                     <span className="shrink-0 text-right text-[14px] font-semibold tabular-nums text-encre">
@@ -280,7 +282,7 @@ export function OrderModal({
                 </p>
               )}
 
-              <button type="submit" disabled={submitting || !lines.length} className="btn-primary mt-5 w-full rounded-md px-4 text-[13px] tracking-[0.12em]">
+              <button type="submit" disabled={submitting || !lines.length} className="btn-primary mt-5 w-full rounded-md bg-[#9A1622] px-4 text-[13px] tracking-[0.12em] hover:bg-[#B01B28]">
                 {submitting ? (
                   <LoaderCircle className="h-5 w-5 animate-spin" />
                 ) : (
@@ -295,6 +297,20 @@ export function OrderModal({
                   </span>
                 )}
               </button>
+              <a
+                href={whatsappOrderUrl({ lines, name, address, phone })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex min-h-[44px] w-full items-center justify-between gap-2 rounded-md border border-[#25D366] px-4 text-[13px] font-medium text-[#128C4B] transition-colors hover:bg-[#25D366]/10"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <WhatsAppIcon className="h-5 w-5 text-[#25D366]" />
+                  Commander via WhatsApp
+                </span>
+                <span dir="rtl" lang="ar" className="font-semibold">
+                  اطلب عبر واتساب
+                </span>
+              </a>
               <Guarantees className="mt-4" />
             </form>
           </motion.div>

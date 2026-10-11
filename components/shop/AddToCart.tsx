@@ -46,6 +46,9 @@ export function AddToCart({ product }: { product: Product }) {
           <legend className="mb-3 flex w-full items-center justify-between text-[12px] font-medium uppercase tracking-[0.15em] text-encre">
             <span>
               Taille <span className="normal-case tracking-normal text-taupe">(facultatif)</span>
+              <span dir="rtl" lang="ar" className="ml-2 normal-case tracking-normal text-taupe">
+                المقاس (اختياري)
+              </span>
             </span>
             {size && <span className="normal-case tracking-normal text-or-700">Taille {size} sélectionnée</span>}
           </legend>
@@ -87,7 +90,7 @@ export function AddToCart({ product }: { product: Product }) {
         <button
           type="button"
           onClick={() => setOrderOpen(true)}
-          className="btn-primary mb-3 w-full animate-attention justify-between px-6 text-[13px] shadow-lg shadow-bordeaux-900/25 hover:animate-none"
+          className="btn-primary mb-3 w-full animate-attention justify-between bg-bordeaux-500 px-6 text-[13px] shadow-lg shadow-bordeaux-500/30 hover:animate-none hover:bg-bordeaux-400"
         >
           <span className="inline-flex items-center gap-2">
             <Zap className="h-4 w-4 text-or-300" strokeWidth={1.8} /> Commander

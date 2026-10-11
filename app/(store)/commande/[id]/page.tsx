@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
+import { WhatsAppIcon } from "@/components/ui/SocialIcons";
+import { whatsappOrderUrl } from "@/lib/whatsapp";
 import { formatDate, formatPrice } from "@/lib/format";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createPublicClient } from "@/lib/supabase/server";
@@ -81,6 +83,19 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
       </Reveal>
 
       <div className="mt-12 flex flex-wrap justify-center gap-4">
+        <a
+          href={whatsappOrderUrl({
+            orderNumber: order.order_number,
+            name: order.customer_name,
+            address: order.address,
+            lines: order.items.map((i) => ({ name: i.product_name, quantity: i.quantity, price: Number(i.line_total) / i.quantity, size: i.size })),
+          })}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn w-full bg-[#25D366] text-white hover:bg-[#1EBE5A] sm:w-auto"
+        >
+          <WhatsAppIcon className="h-5 w-5" /> Confirmer sur WhatsApp · <span dir="rtl" lang="ar" className="normal-case tracking-normal">تأكيد عبر واتساب</span>
+        </a>
         <Link href="/boutique" className="btn-primary">
           Continuer mes achats
         </Link>

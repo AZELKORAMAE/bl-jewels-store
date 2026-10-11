@@ -35,7 +35,7 @@ export default async function HomePage() {
       eyebrow: "Nouvelle collection",
       title: "L'Éclat Éternel",
       text: "Des créations en or 18 carats façonnées à la main, pour célébrer chaque instant précieux.",
-      href: "/collections/eclat-eternel",
+      href: "/boutique?tri=nouveautes",
       cta: "Découvrir",
     },
     {
@@ -44,7 +44,7 @@ export default async function HomePage() {
       eyebrow: "Or Signature",
       title: "L'or, sublimé",
       text: "Des lignes pures en or 18 carats, pensées pour être portées chaque jour.",
-      href: "/collections/or-signature",
+      href: "/boutique",
       cta: "Explorer",
     },
     {
