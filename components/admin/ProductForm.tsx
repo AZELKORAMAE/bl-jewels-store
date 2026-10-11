@@ -138,6 +138,11 @@ export function ProductForm({ product, collections }: { product?: Product; colle
               <Toggle name="is_featured" label="Meilleure vente (flamme + section « Les plus vendus »)" defaultChecked={product?.is_featured ?? false} />
               <Toggle name="is_new" label="Badge « Nouveauté »" defaultChecked={product?.is_new ?? true} />
             </fieldset>
+            <fieldset className="space-y-1">
+              <legend className="field-label">Livraison</legend>
+              <Toggle name="free_shipping" label="Livraison gratuite" defaultChecked={product?.free_shipping ?? true} />
+              <p className="text-[12px] leading-relaxed text-taupe">Si désactivée, 35 DH de livraison sont ajoutés à la commande (une seule fois par commande).</p>
+            </fieldset>
           </div>
         </Card>
 

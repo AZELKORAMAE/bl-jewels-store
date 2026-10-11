@@ -31,6 +31,7 @@ export function AddToCart({ product }: { product: Product }) {
         compareAt: product.compare_at_price && product.compare_at_price > product.price ? product.compare_at_price : null,
         size: product.requires_size ? size : null,
         sizable: Boolean(product.requires_size),
+        paidShipping: product.free_shipping === false,
         stock: product.stock,
       },
       qty
@@ -127,6 +128,7 @@ export function AddToCart({ product }: { product: Product }) {
             quantity: qty,
             size: product.requires_size ? size : null,
             sizable: Boolean(product.requires_size),
+            paidShipping: product.free_shipping === false,
           },
         ]}
       />

@@ -13,22 +13,25 @@ type Line = { name: string; quantity: number; price: number; size?: string | nul
 export function whatsappOrderUrl({
   lines,
   orderNumber,
+  shipping = 0,
   name = "",
   address = "",
   phone = "",
 }: {
   lines: Line[];
   orderNumber?: string;
+  shipping?: number;
   name?: string;
   address?: string;
   phone?: string;
 }) {
-  const total = lines.reduce((n, l) => n + l.price * l.quantity, 0);
+  const total = lines.reduce((n, l) => n + l.price * l.quantity, 0) + shipping;
   const message = [
     "السلام عليكم، أريد تأكيد طلبي",
     orderNumber ? `Bonjour BL Jewels, je souhaite confirmer ma commande ${orderNumber} :` : "Bonjour BL Jewels, je souhaite commander :",
     "",
     ...lines.map((l) => `• ${l.name} × ${l.quantity}${l.size ? ` · Taille / المقاس ${l.size}` : ""} · ${formatPrice(l.price * l.quantity)}`),
+    `Livraison / التوصيل : ${shipping > 0 ? formatPrice(shipping) : "Offerte / مجاني"}`,
     `Total : ${formatPrice(total)} (paiement à la livraison)`,
     "",
     `Nom complet / الاسم الكامل : ${name.trim()}`,

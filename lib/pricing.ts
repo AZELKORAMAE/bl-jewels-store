@@ -1,3 +1,11 @@
+/** Frais de livraison ajoutés (une fois par commande) si un produit n'a pas la livraison gratuite. */
+export const SHIPPING_FEE = 35;
+
+/** Frais de livraison d'une commande : 35 DH dès qu'un article est en livraison payante. */
+export function shippingFee(lines: { paidShipping?: boolean }[]) {
+  return lines.some((l) => l.paidShipping) ? SHIPPING_FEE : 0;
+}
+
 /** Écart appliqué par défaut entre le prix initial (barré) et le prix de vente. */
 export const DEFAULT_PROMO_MARKUP = 299;
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const SERVICES = [
-  { icon: Truck, title: "Livraison offerte", text: "Toutes nos créations sont expédiées gratuitement, soigneusement emballées et assurées." },
+  { icon: Truck, title: "Livraison offerte", text: "La plupart de nos créations sont expédiées gratuitement, soigneusement emballées et assurées." },
   { icon: Banknote, title: "Paiement à la livraison", text: "Vous réglez votre commande uniquement lorsque vous la recevez, en toute confiance." },
   { icon: Gift, title: "Écrin signature", text: "Chaque bijou est présenté dans notre écrin bordeaux, avec ruban or et carte manuscrite." },
   { icon: PenLine, title: "Gravure offerte", text: "Précisez vos initiales, une date ou un mot doux lors de la commande." },

@@ -10,6 +10,7 @@ import { PhoneInput } from "@/components/ui/PhoneInput";
 import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { whatsappOrderUrl } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/format";
+import { shippingFee } from "@/lib/pricing";
 import { useEscape, useLockBody } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -23,6 +24,8 @@ export type OrderLine = {
   quantity: number;
   size?: string | null;
   sizable?: boolean;
+  /** Produit sans livraison gratuite (35 DH) */
+  paidShipping?: boolean;
 };
 
 const SIZES = ["5", "6", "7", "8", "9", "10"];
@@ -79,7 +82,9 @@ export function OrderModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const total = lines.reduce((n, l) => n + l.price * l.quantity, 0);
+  const subtotal = lines.reduce((n, l) => n + l.price * l.quantity, 0);
+  const shipping = shippingFee(lines);
+  const total = subtotal + shipping;
   const count = lines.reduce((n, l) => n + l.quantity, 0);
 
   const submit = async (e: React.FormEvent) => {
@@ -202,6 +207,18 @@ export function OrderModal({
                   </li>
                 ))}
               </ul>
+              <p className="flex items-center justify-between gap-3 border-b border-sable py-2.5 text-[13px]">
+                <span className="text-taupe">
+                  Livraison · <span dir="rtl" lang="ar">التوصيل</span>
+                </span>
+                {shipping > 0 ? (
+                  <span className="font-semibold tabular-nums text-encre">{formatPrice(shipping)}</span>
+                ) : (
+                  <span className="text-or-700">
+                    Offerte · <span dir="rtl" lang="ar">مجاني</span>
+                  </span>
+                )}
+              </p>
               {lines.length > 1 && (
                 <p className="flex justify-between border-b border-sable py-3 text-[14px]">
                   <span className="text-taupe">Total ({count} articles)</span>
@@ -298,7 +315,7 @@ export function OrderModal({
                 )}
               </button>
               <a
-                href={whatsappOrderUrl({ lines, name, address, phone })}
+                href={whatsappOrderUrl({ lines, shipping, name, address, phone })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 flex min-h-[44px] w-full items-center justify-between gap-2 rounded-md border border-[#25D366] px-4 text-[13px] font-medium text-[#128C4B] transition-colors hover:bg-[#25D366]/10"
@@ -311,7 +328,7 @@ export function OrderModal({
                   اطلب عبر واتساب
                 </span>
               </a>
-              <Guarantees className="mt-4" />
+              <Guarantees className="mt-4" freeShipping={shipping === 0} />
             </form>
           </motion.div>
         </div>

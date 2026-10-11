@@ -14,7 +14,7 @@ import { useEscape, useLockBody } from "@/lib/hooks";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function CartDrawer() {
-  const { items, isOpen, close, update, remove, subtotal, savings, count, clear } = useCart();
+  const { items, isOpen, close, update, remove, subtotal, savings, shipping, count, clear } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
   const pathname = usePathname();
   const closeBtn = useRef<HTMLButtonElement>(null);
@@ -37,7 +37,7 @@ export function CartDrawer() {
       open={orderOpen}
       onClose={() => setOrderOpen(false)}
       onOrdered={clear}
-      lines={items.map((i) => ({ productId: i.productId, name: i.name, image: i.image, price: i.price, compareAt: i.compareAt, quantity: i.quantity, size: i.size, sizable: i.sizable }))}
+      lines={items.map((i) => ({ productId: i.productId, name: i.name, image: i.image, price: i.price, compareAt: i.compareAt, quantity: i.quantity, size: i.size, sizable: i.sizable, paidShipping: i.paidShipping }))}
     />
     <AnimatePresence>
       {isOpen && (
@@ -126,7 +126,7 @@ export function CartDrawer() {
                   )}
                   <div className="mt-2 flex items-center justify-between text-[14px]">
                     <span className="text-taupe">Livraison</span>
-                    <span className="text-or-700">Offerte</span>
+                    {shipping > 0 ? <span className="tabular-nums text-encre">{formatPrice(shipping)}</span> : <span className="text-or-700">Offerte</span>}
                   </div>
                   <button
                     type="button"

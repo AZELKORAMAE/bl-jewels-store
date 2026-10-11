@@ -44,7 +44,7 @@ const REQUIRED: { key: "full_name" | "phone" | "address" | "city"; message: stri
 
 export function Checkout() {
   const router = useRouter();
-  const { items, ready, subtotal, savings, update, remove, setSize, clear } = useCart();
+  const { items, ready, subtotal, savings, shipping, update, remove, setSize, clear } = useCart();
   const sizableMissing = items.filter((i) => i.sizable && !i.size).length;
   const [form, setForm] = useState<Form>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<"full_name" | "phone" | "address" | "city", string>>>({});
@@ -266,7 +266,7 @@ export function Checkout() {
             )}
             <div className="flex justify-between">
               <dt className="text-taupe">Livraison</dt>
-              <dd className="text-or-700">Offerte</dd>
+              {shipping > 0 ? <dd className="tabular-nums">{formatPrice(shipping)}</dd> : <dd className="text-or-700">Offerte</dd>}
             </div>
             <div className="flex justify-between">
               <dt className="text-taupe">Écrin signature</dt>
@@ -274,7 +274,7 @@ export function Checkout() {
             </div>
             <div className="flex items-baseline justify-between border-t border-sable pt-4">
               <dt className="text-[12px] font-medium uppercase tracking-[0.2em]">Total</dt>
-              <dd className="font-serif text-[30px] tabular-nums text-bordeaux-900">{formatPrice(subtotal)}</dd>
+              <dd className="font-serif text-[30px] tabular-nums text-bordeaux-900">{formatPrice(subtotal + shipping)}</dd>
             </div>
           </dl>
 

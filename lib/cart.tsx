@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { shippingFee } from "./pricing";
 import type { CartItem } from "./types";
 
 /** Identifiant de ligne du panier : produit + taille éventuelle. */
@@ -12,6 +13,8 @@ type CartContextValue = {
   subtotal: number;
   /** Total économisé grâce aux promotions */
   savings: number;
+  /** Frais de livraison (0 si tout est en livraison gratuite) */
+  shipping: number;
   ready: boolean;
   isOpen: boolean;
   open: () => void;
@@ -101,6 +104,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isOpen,
       count: items.reduce((n, i) => n + i.quantity, 0),
       subtotal: items.reduce((n, i) => n + i.price * i.quantity, 0),
+      shipping: shippingFee(items),
       savings: items.reduce((n, i) => n + (i.compareAt && i.compareAt > i.price ? (i.compareAt - i.price) * i.quantity : 0), 0),
       open: () => setIsOpen(true),
       close: () => setIsOpen(false),

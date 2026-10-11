@@ -12,7 +12,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
-import { getPromo } from "@/lib/pricing";
+import { getPromo, SHIPPING_FEE } from "@/lib/pricing";
 
 export const revalidate = 60;
 
@@ -108,7 +108,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               <div className="my-8 h-px bg-sable" />
               <AddToCart product={product} />
 
-              <Guarantees className="mt-8" />
+              <Guarantees className="mt-8" freeShipping={product.free_shipping !== false} />
 
               <div className="mt-10 border-t border-sable">
                 <AccordionItem title="Description" defaultOpen>
@@ -127,7 +127,10 @@ export default async function ProductPage({ params }: { params: Params }) {
                   </AccordionItem>
                 )}
                 <AccordionItem title="Livraison, échange & retour">
-                  <p>Livraison offerte en moins de 24 h, avec paiement à la réception.</p>
+                  <p>
+                    {product.free_shipping === false ? `Livraison en moins de 24 h pour ${SHIPPING_FEE} MAD` : "Livraison offerte en moins de 24 h"}, avec paiement à la
+                    réception.
+                  </p>
                   <p className="mt-3">
                     Pour un échange ou un retour, contactez-nous sur WhatsApp au{" "}
                     <a href="https://wa.me/212655777934" target="_blank" rel="noopener noreferrer" className="text-bordeaux-900 underline underline-offset-4">

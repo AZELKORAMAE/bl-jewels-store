@@ -62,6 +62,7 @@ export async function saveProduct(_: ActionState, fd: FormData): Promise<ActionS
     is_featured: fd.get("is_featured") === "on",
     is_new: fd.get("is_new") === "on",
     is_active: fd.get("is_active") === "on",
+    free_shipping: fd.get("free_shipping") === "on",
   };
 
   const { error } = id ? await supabase.from("products").update(payload).eq("id", id) : await supabase.from("products").insert(payload);
