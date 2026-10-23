@@ -3,7 +3,7 @@ import { Guarantees } from "@/components/shop/Guarantees";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AddToCart } from "@/components/shop/AddToCart";
+import { AddToCart, PhotoOrderButton } from "@/components/shop/AddToCart";
 import { Breadcrumbs } from "@/components/shop/Breadcrumbs";
 import { PixelEvent } from "@/components/site/MetaPixel";
 import { ProductGallery } from "@/components/shop/ProductGallery";
@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
       <section className="container grid gap-10 py-8 md:py-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-7">
-          <ProductGallery images={product.images} name={product.name} />
+          <ProductGallery images={product.images} name={product.name} overlay={product.stock > 0 ? <PhotoOrderButton /> : undefined} />
         </div>
 
         <div className="lg:col-span-5">

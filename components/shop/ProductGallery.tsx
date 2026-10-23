@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
-export function ProductGallery({ images, name }: { images: string[]; name: string }) {
+export function ProductGallery({ images, name, overlay }: { images: string[]; name: string; /** Élément posé en bas de la photo (mobile), ex. bouton Commander */ overlay?: React.ReactNode }) {
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -29,12 +29,15 @@ export function ProductGallery({ images, name }: { images: string[]; name: strin
     <div>
       {/* Mobile : défilement horizontal */}
       <div className="md:hidden">
+        <div className="relative">
         <div ref={track} onScroll={onTrackScroll} className="scrollbar-none -mx-5 flex snap-x snap-mandatory overflow-x-auto">
           {list.map((src, i) => (
             <div key={src} className="relative aspect-square w-full shrink-0 snap-center bg-[#F6F1EB]">
               <Image src={src} alt={`${name} — vue ${i + 1}`} fill priority={i === 0} sizes="100vw" className="object-cover mix-blend-multiply" />
             </div>
           ))}
+        </div>
+        {overlay && <div className="absolute inset-x-0 bottom-4 flex justify-center px-4">{overlay}</div>}
         </div>
         {list.length > 1 && (
           <div className="mt-4 flex justify-center gap-2" aria-hidden>

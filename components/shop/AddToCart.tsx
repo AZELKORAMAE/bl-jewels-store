@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ShoppingBag, Zap } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QuantityStepper } from "@/components/site/CartDrawer";
 import { OrderModal } from "@/components/shop/OrderModal";
 import { useCart } from "@/lib/cart";
@@ -9,6 +9,27 @@ import { cn } from "@/lib/cn";
 import type { Product } from "@/lib/types";
 
 const SIZES = ["5", "6", "7", "8", "9", "10"];
+
+/** Événement qui ouvre le formulaire de commande de la fiche produit. */
+export const OPEN_ORDER_EVENT = "bl:open-order";
+
+/** Bouton « Commander » posé sur la photo du produit (mobile). */
+export function PhotoOrderButton() {
+  return (
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new Event(OPEN_ORDER_EVENT))}
+      className="btn-primary w-full max-w-sm animate-attention justify-between rounded-full bg-bordeaux-500/95 px-6 text-[13px] shadow-xl shadow-bordeaux-950/40 backdrop-blur hover:animate-none"
+    >
+      <span className="inline-flex items-center gap-2">
+        <Zap className="h-4 w-4 text-or-300" strokeWidth={1.8} /> Commander
+      </span>
+      <span dir="rtl" lang="ar" className="font-sans text-[15px] font-semibold normal-case tracking-normal">
+        اطلب الآن
+      </span>
+    </button>
+  );
+}
 
 export function AddToCart({ product }: { product: Product }) {
   const { add } = useCart();
@@ -18,6 +39,13 @@ export function AddToCart({ product }: { product: Product }) {
   const [orderOpen, setOrderOpen] = useState(false);
   const soldOut = product.stock <= 0;
   const max = Math.min(20, Math.max(product.stock, 1));
+
+  // Bouton « Commander » posé sur la photo (fiche produit, mobile) : ouvre le même formulaire
+  useEffect(() => {
+    const open = () => setOrderOpen(true);
+    window.addEventListener(OPEN_ORDER_EVENT, open);
+    return () => window.removeEventListener(OPEN_ORDER_EVENT, open);
+  }, []);
 
   const onAdd = () => {
     add(
