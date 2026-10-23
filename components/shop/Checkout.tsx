@@ -10,6 +10,7 @@ import { PhoneInput } from "@/components/ui/PhoneInput";
 import { lineKey, useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { createClient } from "@/lib/supabase/client";
+import { pixelContents, trackPixel } from "@/lib/meta-pixel";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 type Form = {
@@ -51,6 +52,14 @@ export function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const checkoutTracked = useRef(false);
+
+  // Meta Pixel : début de commande (page panier avec au moins un article), une seule fois
+  useEffect(() => {
+    if (!ready || !items.length || checkoutTracked.current) return;
+    checkoutTracked.current = true;
+    trackPixel("InitiateCheckout", pixelContents(items));
+  }, [ready, items]);
 
   // Pré-remplissage pour les clients connectés
   useEffect(() => {

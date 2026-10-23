@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { PixelEvent } from "@/components/site/MetaPixel";
 import { Reveal } from "@/components/ui/Reveal";
 import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { whatsappOrderUrl } from "@/lib/whatsapp";
@@ -38,6 +39,20 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
 
   return (
     <div className="container max-w-3xl py-16 md:py-24">
+      {/* Meta Pixel : commande confirmée, envoyée une seule fois par commande */}
+      <PixelEvent
+        event="Purchase"
+        eventID={order.order_number}
+        onceKey={`pixel-purchase-${order.id}`}
+        params={{
+          value: Number(order.total),
+          currency: process.env.NEXT_PUBLIC_CURRENCY || "MAD",
+          content_type: "product",
+          contents: order.items.map((i) => ({ id: i.product_name, quantity: i.quantity, item_price: Number(i.unit_price) })),
+          num_items: order.items.reduce((n, i) => n + i.quantity, 0),
+          order_id: order.order_number,
+        }}
+      />
       <Reveal className="text-center">
         <CircleCheck className="mx-auto h-14 w-14 text-or-600" strokeWidth={1} />
         <p className="eyebrow mt-6 text-or-700">Commande {order.order_number}</p>

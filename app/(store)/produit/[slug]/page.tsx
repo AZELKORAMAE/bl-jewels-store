@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/shop/AddToCart";
 import { Breadcrumbs } from "@/components/shop/Breadcrumbs";
+import { PixelEvent } from "@/components/site/MetaPixel";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { AccordionItem } from "@/components/ui/Accordion";
 import { ProductCarousel } from "@/components/ui/ProductCarousel";
@@ -56,6 +57,17 @@ export default async function ProductPage({ params }: { params: Params }) {
 
   return (
     <>
+      <PixelEvent
+        event="ViewContent"
+        params={{
+          content_ids: [product.id],
+          content_type: "product",
+          content_name: product.name,
+          content_category: product.collection?.name,
+          value: product.price,
+          currency: process.env.NEXT_PUBLIC_CURRENCY || "MAD",
+        }}
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="container pt-6 md:pt-10">
         <Breadcrumbs

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { pixelContents, trackPixel } from "./meta-pixel";
 import { shippingFee } from "./pricing";
 import type { CartItem } from "./types";
 
@@ -64,6 +65,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { ...item, quantity: Math.min(quantity, limit) }];
     });
+    trackPixel("AddToCart", { ...pixelContents([{ productId: item.productId, quantity, price: item.price }]), content_name: item.name });
     // Le panier latéral s'ouvre sauf pour l'ajout rapide depuis une carte produit
     if (options?.open !== false) setIsOpen(true);
   }, []);

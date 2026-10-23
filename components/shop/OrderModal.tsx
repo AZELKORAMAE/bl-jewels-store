@@ -10,6 +10,7 @@ import { PhoneInput } from "@/components/ui/PhoneInput";
 import { WhatsAppIcon } from "@/components/ui/SocialIcons";
 import { whatsappOrderUrl } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/format";
+import { pixelContents, trackPixel } from "@/lib/meta-pixel";
 import { shippingFee } from "@/lib/pricing";
 import { useEscape, useLockBody } from "@/lib/hooks";
 import { createClient } from "@/lib/supabase/client";
@@ -68,6 +69,7 @@ export function OrderModal({
   useEffect(() => {
     if (!open) return;
     setLines(initialLines);
+    trackPixel("InitiateCheckout", pixelContents(initialLines));
     setServerError("");
     window.setTimeout(() => firstField.current?.focus(), 200);
     if (!isSupabaseConfigured) return;

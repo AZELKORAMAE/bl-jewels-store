@@ -2,6 +2,7 @@ import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { CartDrawer } from "@/components/site/CartDrawer";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
+import { MetaPixel } from "@/components/site/MetaPixel";
 import { Providers } from "@/components/site/Providers";
 import { getCollections } from "@/lib/data";
 
@@ -16,6 +17,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       <a href="#contenu" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-2">
         Aller au contenu
       </a>
+      <MetaPixel />
       <AnnouncementBar />
       <Header collections={nav} />
       <main id="contenu">{children}</main>
