@@ -78,9 +78,12 @@ export default async function ProductPage({ params }: { params: Params }) {
             { label: product.name },
           ]}
         />
-        {/* Matière (réglable par produit dans l'admin, « Or 18 carats » par défaut) */}
-        <span className="shrink-0 whitespace-nowrap border border-or-400/70 bg-or-50 px-3 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-or-800">
-          {product.material || "Or 18 carats"}
+        {/* Matière (réglable par produit dans l'admin, « ذهب عيار 18 » par défaut) */}
+        <span
+          dir="auto"
+          className="mt-3 shrink-0 whitespace-nowrap border border-or-400/70 bg-or-50 px-3.5 py-1.5 text-[13px] font-semibold text-or-800 md:mt-1"
+        >
+          {product.material || "ذهب عيار 18"}
         </span>
       </div>
 
