@@ -119,7 +119,7 @@ export function AddToCart({ product }: { product: Product }) {
         <button
           type="button"
           onClick={() => setOrderOpen(true)}
-          className="btn-primary mb-3 w-full animate-attention justify-between bg-bordeaux-500 px-6 text-[13px] shadow-lg shadow-bordeaux-500/30 hover:animate-none hover:bg-bordeaux-400"
+          className="btn-primary mb-3 w-full animate-attention justify-between max-md:hidden bg-bordeaux-500 px-6 text-[13px] shadow-lg shadow-bordeaux-500/30 hover:animate-none hover:bg-bordeaux-400"
         >
           <span className="inline-flex items-center gap-2">
             <Zap className="h-4 w-4 text-or-300" strokeWidth={1.8} /> Commander

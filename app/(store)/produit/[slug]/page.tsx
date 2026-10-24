@@ -69,7 +69,7 @@ export default async function ProductPage({ params }: { params: Params }) {
         }}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <div className="container pt-6 md:pt-10">
+      <div className="container flex items-start justify-between gap-3 pt-6 md:pt-10">
         <Breadcrumbs
           items={[
             product.collection
@@ -78,6 +78,10 @@ export default async function ProductPage({ params }: { params: Params }) {
             { label: product.name },
           ]}
         />
+        {/* Matière (réglable par produit dans l'admin, « Or 18 carats » par défaut) */}
+        <span className="shrink-0 whitespace-nowrap border border-or-400/70 bg-or-50 px-3 py-1.5 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-or-800">
+          {product.material || "Or 18 carats"}
+        </span>
       </div>
 
       <section className="container grid gap-10 py-8 md:py-12 lg:grid-cols-12 lg:gap-16">
@@ -100,7 +104,6 @@ export default async function ProductPage({ params }: { params: Params }) {
                 </Link>
               )}
               <h1 className="mt-2 font-serif text-[34px] font-light leading-tight text-bordeaux-900 md:text-[44px]">{product.name}</h1>
-              {product.material && <p className="mt-3 text-[14px] text-taupe">{product.material}</p>}
               <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2 tabular-nums">
                 {promo && (
                   <span className="text-[17px] text-taupe line-through decoration-taupe/70">

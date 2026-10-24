@@ -83,9 +83,9 @@ export function ProductForm({ product, collections }: { product?: Product; colle
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="material" className="field-label">
-                Matière
+                Matière <span className="normal-case tracking-normal text-taupe">(affichée en haut de la fiche produit)</span>
               </label>
-              <input id="material" name="material" defaultValue={product?.material ?? ""} placeholder="Or jaune 18 carats, diamants" className="field rounded-md" />
+              <input id="material" name="material" defaultValue={product?.material ?? "Or 18 carats"} placeholder="Or 18 carats" className="field rounded-md" />
             </div>
           </div>
         </Card>
