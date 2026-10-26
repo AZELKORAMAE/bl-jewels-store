@@ -37,6 +37,8 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     siteName: "BL Jewels",
   },
+  // Vérification du domaine bljewels.co dans Meta Business (Brand safety → Domains)
+  other: { "facebook-domain-verification": "g7mh71sqbzuzskxtu5eyc2ddx8n7x8" },
 };
 
 export const viewport: Viewport = {
