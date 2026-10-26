@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/ui/Logo";
+import { trackPixel } from "@/lib/meta-pixel";
 import { CART_BUMP_EVENT } from "@/components/ui/QuickAdd";
 import { useCart } from "@/lib/cart";
 import { cn } from "@/lib/cn";
@@ -261,6 +262,7 @@ function SearchOverlay({ open, onClose, collections }: { open: boolean; onClose:
 
   const go = (q: string) => {
     if (!q.trim()) return;
+    trackPixel("Search", { search_string: q.trim() });
     router.push(`/boutique?q=${encodeURIComponent(q.trim())}`);
     onClose();
   };

@@ -3,6 +3,7 @@
 import { LoaderCircle, MailCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { trackPixel } from "@/lib/meta-pixel";
 import { createClient } from "@/lib/supabase/client";
 
 // Supabase envoie 6 à 10 chiffres selon le réglage « Email OTP Length » du projet
@@ -48,6 +49,7 @@ export function OtpVerify({ email, next = "/compte", onBack }: { email: string; 
       input.current?.select();
       return;
     }
+    trackPixel("CompleteRegistration", { status: true });
     router.replace(next);
     router.refresh();
   };

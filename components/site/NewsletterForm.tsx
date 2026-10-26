@@ -2,6 +2,7 @@
 
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { useState } from "react";
+import { trackPixel } from "@/lib/meta-pixel";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -26,6 +27,7 @@ export function NewsletterForm() {
         return;
       }
     }
+    trackPixel("Lead", { content_name: "Newsletter" });
     setState("done");
     setMessage("Merci ! Vous recevrez bientôt les nouvelles de la Maison.");
     setEmail("");

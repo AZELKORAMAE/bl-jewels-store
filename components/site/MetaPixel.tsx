@@ -23,6 +23,23 @@ function PageViews() {
   return null;
 }
 
+/** Contact : chaque clic vers WhatsApp, le téléphone, Instagram ou l'itinéraire de la boutique. */
+function ContactClicks() {
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement | null)?.closest("a");
+      const href = link?.getAttribute("href") ?? "";
+      if (href.includes("wa.me")) trackPixel("Contact", { method: "whatsapp" });
+      else if (href.startsWith("tel:")) trackPixel("Contact", { method: "telephone" });
+      else if (href.includes("instagram.com")) trackPixel("Contact", { method: "instagram" });
+      else if (href.includes("google.com/maps") || href.includes("maps.app.goo.gl")) trackPixel("FindLocation");
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+  return null;
+}
+
 /** Meta Pixel : chargé après l'affichage de la page, uniquement sur la boutique (pas dans l'admin). */
 export function MetaPixel() {
   if (!META_PIXEL_ID) return null;
@@ -43,6 +60,7 @@ fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`}
       <Suspense fallback={null}>
         <PageViews />
       </Suspense>
+      <ContactClicks />
     </>
   );
 }

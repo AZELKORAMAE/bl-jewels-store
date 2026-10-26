@@ -2,7 +2,7 @@
  * Meta Pixel (Facebook / Instagram Ads).
  * L'identifiant peut être remplacé sans toucher au code via la variable Vercel NEXT_PUBLIC_META_PIXEL_ID.
  */
-export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "3151289345263322";
+export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "30054596400797611";
 
 type Fbq = (...args: unknown[]) => void;
 
