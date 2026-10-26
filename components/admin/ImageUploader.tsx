@@ -4,9 +4,10 @@ import { ImagePlus, LoaderCircle, Star, X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/cn";
+import { compressImage } from "@/lib/compress-image";
 import { createClient } from "@/lib/supabase/client";
 
-const MAX_MB = 6;
+const MAX_MB = 15;
 
 type Props = {
   name: string;
@@ -39,7 +40,9 @@ export function ImageUploader({ name, initial, multiple = true, folder, format =
     const selected = multiple ? list : list.slice(0, 1);
     setUploading(selected.length);
     const urls: string[] = [];
-    for (const file of selected) {
+    for (const original of selected) {
+      // Photo allégée avant l'envoi (moins de stockage et de bande passante)
+      const file = await compressImage(original);
       const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
       const path = `${folder}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("images").upload(path, file, { cacheControl: "31536000", contentType: file.type });
