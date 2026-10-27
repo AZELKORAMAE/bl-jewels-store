@@ -60,8 +60,6 @@ export default async function ProductPage({ params }: { params: Params }) {
       <PixelEvent
         event="ViewContent"
         params={{
-          content_ids: [product.id],
-          content_type: "product",
           content_name: product.name,
           content_category: product.collection?.name,
           value: product.price,

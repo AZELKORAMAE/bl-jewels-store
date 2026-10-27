@@ -47,10 +47,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
         params={{
           value: Number(order.total),
           currency: process.env.NEXT_PUBLIC_CURRENCY || "MAD",
-          content_type: "product",
-          // Même identifiant que ViewContent / AddToCart (id du produit) ; le nom sert de secours
-          content_ids: order.items.map((i) => i.product_id || i.product_name),
-          contents: order.items.map((i) => ({ id: i.product_id || i.product_name, quantity: i.quantity, item_price: Number(i.unit_price) })),
+          content_name: order.items.map((i) => i.product_name).join(", "),
           num_items: order.items.reduce((n, i) => n + i.quantity, 0),
           order_id: order.order_number,
         }}

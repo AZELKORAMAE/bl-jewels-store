@@ -15,12 +15,13 @@ export function trackPixel(event: string, params?: Record<string, unknown>, opti
   else fbq("track", event, params ?? {});
 }
 
-/** Paramètres « contenu » communs (catalogue en dirhams). */
+/**
+ * Paramètres communs : montant, devise et nombre d'articles.
+ * Pas d'identifiants produit (content_ids / contents) : la boutique n'utilise pas de catalogue Meta,
+ * et ces identifiants déclenchent l'avertissement « Content IDs not matching any catalog ».
+ */
 export function pixelContents(lines: { productId: string; quantity: number; price: number }[]) {
   return {
-    content_ids: lines.map((l) => l.productId),
-    content_type: "product",
-    contents: lines.map((l) => ({ id: l.productId, quantity: l.quantity, item_price: l.price })),
     num_items: lines.reduce((n, l) => n + l.quantity, 0),
     value: lines.reduce((n, l) => n + l.price * l.quantity, 0),
     currency: process.env.NEXT_PUBLIC_CURRENCY || "MAD",
