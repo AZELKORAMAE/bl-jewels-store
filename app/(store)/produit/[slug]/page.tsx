@@ -15,7 +15,12 @@ import { getProduct, getProducts } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
 import { getPromo, SHIPPING_FEE } from "@/lib/pricing";
 
-export const revalidate = 60;
+export const revalidate = 3600;
+
+// Fiches générées à la première visite puis gardées en cache (au lieu d'être recalculées à chaque visite)
+export function generateStaticParams() {
+  return [];
+}
 
 type Params = Promise<{ slug: string }>;
 

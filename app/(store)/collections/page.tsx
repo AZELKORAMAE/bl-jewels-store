@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/shop/Breadcrumbs";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { getCollections } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 export const metadata: Metadata = { title: "Collections" };
 
 export default async function CollectionsPage() {

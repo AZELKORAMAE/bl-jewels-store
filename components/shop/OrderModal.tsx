@@ -124,14 +124,13 @@ export function OrderModal({
       return;
     }
     const orderId = (data as { id: string }).id;
-    if (email) {
-      await fetch("/api/commande/confirmation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: orderId }),
-        keepalive: true,
-      }).catch(() => {});
-    }
+    // Met à jour le stock affiché et envoie l'e-mail de confirmation (si adresse donnée)
+    await fetch("/api/commande/confirmation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: orderId }),
+      keepalive: true,
+    }).catch(() => {});
     onOrdered?.();
     router.push(`/commande/${orderId}`);
   };

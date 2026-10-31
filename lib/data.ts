@@ -1,5 +1,6 @@
 import "server-only";
 import catalog from "@/data/catalog.json";
+import { unstable_cache } from "next/cache";
 import { isSupabaseConfigured } from "./supabase/config";
 import { createPublicClient } from "./supabase/server";
 import type { Collection, Product } from "./types";
@@ -64,7 +65,7 @@ function normalizeProduct(row: Record<string, unknown>): Product {
   };
 }
 
-export async function getCollections(): Promise<Collection[]> {
+async function fetchCollections(): Promise<Collection[]> {
   if (!isSupabaseConfigured) return demoCollections;
   const { data, error } = await createPublicClient()
     .from("collections")
@@ -75,13 +76,13 @@ export async function getCollections(): Promise<Collection[]> {
   return (data as Collection[]) ?? [];
 }
 
-export async function getCollection(slug: string): Promise<Collection | null> {
+async function fetchCollection(slug: string): Promise<Collection | null> {
   if (!isSupabaseConfigured) return demoCollections.find((c) => c.slug === slug) ?? null;
   const { data } = await createPublicClient().from("collections").select("*").eq("slug", slug).maybeSingle();
   return (data as Collection) ?? null;
 }
 
-export async function getProducts(query: ProductQuery = {}): Promise<Product[]> {
+async function fetchProducts(query: ProductQuery = {}): Promise<Product[]> {
   const { category, collectionId, q, sort, featured, isNew, maxPrice, limit, excludeId } = query;
 
   if (!isSupabaseConfigured) {
@@ -129,7 +130,7 @@ type HomeSection = "featured" | "new";
  * « featured » = cochés « Meilleure vente » ; « new » = cochés « Nouveauté ».
  * Sans ordre défini (ou avant l'exécution de supabase/ordre-accueil.sql) : du plus récent au plus ancien.
  */
-export async function getHomeSection(section: HomeSection, limit = 12): Promise<Product[]> {
+async function fetchHomeSection(section: HomeSection, limit = 12): Promise<Product[]> {
   const flag = section === "featured" ? "is_featured" : "is_new";
   const rank = section === "featured" ? "featured_rank" : "new_rank";
   if (!isSupabaseConfigured) return getProducts({ [section === "featured" ? "featured" : "isNew"]: true, sort: "nouveautes", limit });
@@ -156,7 +157,7 @@ export function getNewArrivals(limit = 12) {
   return getHomeSection("new", limit);
 }
 
-export async function getProduct(slug: string): Promise<Product | null> {
+async function fetchProduct(slug: string): Promise<Product | null> {
   if (!isSupabaseConfigured) return demoProducts.find((p) => p.slug === slug) ?? null;
   const supabase = createPublicClient();
   const { data } = await supabase.from("products").select(PRODUCT_SELECT).eq("slug", slug).eq("is_active", true).maybeSingle();
@@ -180,3 +181,18 @@ function sorter(sort?: string) {
     return Number(b.is_featured) - Number(a.is_featured) || byDate;
   };
 }
+
+// ---------------------------------------------------------------------
+//  Cache des lectures du catalogue : évite d'interroger Supabase et de
+//  recalculer à chaque visite (consommation CPU Vercel). Vidé dès qu'une
+//  modification est faite dans l'admin ou qu'une commande change le stock
+//  (revalidateTag(CATALOG_TAG)), et au plus tard toutes les heures.
+// ---------------------------------------------------------------------
+export const CATALOG_TAG = "catalogue";
+const cacheOptions = { tags: [CATALOG_TAG], revalidate: 3600 };
+
+export const getCollections = unstable_cache(fetchCollections, ["getCollections"], cacheOptions);
+export const getCollection = unstable_cache(fetchCollection, ["getCollection"], cacheOptions);
+export const getProducts = unstable_cache(fetchProducts, ["getProducts"], cacheOptions);
+export const getHomeSection = unstable_cache(fetchHomeSection, ["getHomeSection"], cacheOptions);
+export const getProduct = unstable_cache(fetchProduct, ["getProduct"], cacheOptions);

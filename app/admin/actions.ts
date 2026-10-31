@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import { CATALOG_TAG } from "@/lib/data";
 import { addDays, todayISO } from "@/lib/dates";
 import { sendDeliveryReminders } from "@/lib/deliveries";
 import { slugify } from "@/lib/format";
@@ -23,6 +24,7 @@ const num = (fd: FormData, key: string) => {
 };
 
 function refreshStore() {
+  revalidateTag(CATALOG_TAG);
   revalidatePath("/", "layout");
 }
 

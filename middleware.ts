@@ -57,5 +57,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|logo|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif)$).*)"],
+  // Uniquement l'admin et l'espace client : la boutique publique n'a pas besoin de session côté serveur
+  // (évite une fonction + un appel Supabase à chaque page vue → beaucoup moins de CPU Vercel).
+  matcher: ["/admin/:path*", "/compte/:path*"],
 };

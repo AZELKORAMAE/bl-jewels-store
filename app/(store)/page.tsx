@@ -11,7 +11,7 @@ import { EDITORIAL_IMAGES } from "@/lib/constants";
 import { getBestSellers, getCollections, getNewArrivals } from "@/lib/data";
 import { cn } from "@/lib/cn";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 const SERVICES = [
   { icon: Truck, title: "Livraison offerte", text: "Expédition soignée et assurée, sans frais, jusqu'à votre porte." },

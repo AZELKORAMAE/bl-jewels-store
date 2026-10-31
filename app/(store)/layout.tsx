@@ -6,7 +6,7 @@ import { MetaPixel } from "@/components/site/MetaPixel";
 import { Providers } from "@/components/site/Providers";
 import { getCollections } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
   const collections = await getCollections();
