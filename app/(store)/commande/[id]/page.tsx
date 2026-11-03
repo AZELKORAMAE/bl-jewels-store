@@ -102,6 +102,7 @@ export default async function OrderConfirmationPage({ params }: { params: Promis
             orderNumber: order.order_number,
             shipping: Number(order.shipping),
             name: order.customer_name,
+            city: order.city ?? "",
             address: order.address,
             lines: order.items.map((i) => ({ name: i.product_name, quantity: i.quantity, price: Number(i.line_total) / i.quantity, size: i.size })),
           })}

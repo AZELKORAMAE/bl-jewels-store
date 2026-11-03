@@ -15,6 +15,7 @@ export function whatsappOrderUrl({
   orderNumber,
   shipping = 0,
   name = "",
+  city = "",
   address = "",
   phone = "",
 }: {
@@ -22,6 +23,7 @@ export function whatsappOrderUrl({
   orderNumber?: string;
   shipping?: number;
   name?: string;
+  city?: string;
   address?: string;
   phone?: string;
 }) {
@@ -35,6 +37,7 @@ export function whatsappOrderUrl({
     `Total : ${formatPrice(total)} (paiement à la livraison)`,
     "",
     `Nom complet / الاسم الكامل : ${name.trim()}`,
+    `Ville / المدينة : ${city.trim()}`,
     `Adresse / العنوان : ${address.trim()}`,
     `Téléphone / الهاتف : ${phone.trim()}`,
   ].join("\n");

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, CircleUser, LoaderCircle, MapPin, X } from "lucide-react";
+import { Building2, ChevronDown, CircleUser, LoaderCircle, MapPin, X } from "lucide-react";
 import { Guarantees } from "@/components/shop/Guarantees";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -50,6 +50,7 @@ export function OrderModal({
   const router = useRouter();
   const [lines, setLines] = useState(initialLines);
   const [name, setName] = useState("");
+  const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export function OrderModal({
   const [receiptName, setReceiptName] = useState("");
   const [showPrice, setShowPrice] = useState(true);
   const [isGift, setIsGift] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; address?: string; phone?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; city?: string; address?: string; phone?: string }>({});
   const [serverError, setServerError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const firstField = useRef<HTMLInputElement>(null);
@@ -94,6 +95,7 @@ export function OrderModal({
     setServerError("");
     const next: typeof errors = {};
     if (!name.trim()) next.name = "الاسم مطلوب / Indiquez votre nom complet.";
+    if (!city.trim()) next.city = "المدينة مطلوبة / Indiquez votre ville.";
     if (!address.trim()) next.address = "العنوان مطلوب / Indiquez votre adresse.";
     if (phone.replace(/\D/g, "").length < 8) next.phone = "رقم الهاتف غير صحيح / Numéro de téléphone invalide.";
     setErrors(next);
@@ -109,7 +111,7 @@ export function OrderModal({
         full_name: name,
         address,
         phone,
-        city: "",
+        city,
         email,
         country: "Maroc",
         receipt_name: receiptName,
@@ -240,6 +242,16 @@ export function OrderModal({
                     className="min-h-[48px] w-full min-w-0 bg-transparent px-3 text-[16px] text-encre placeholder:text-taupe/60 focus:outline-none"
                   />
                 </ModalField>
+                <ModalField id="om-city" ar="المدينة" fr="Ville" icon={<Building2 className="h-5 w-5" strokeWidth={1.5} />} error={errors.city}>
+                  <input
+                    id="om-city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    autoComplete="address-level2"
+                    placeholder="المدينة / Ville"
+                    className="min-h-[48px] w-full min-w-0 bg-transparent px-3 text-[16px] text-encre placeholder:text-taupe/60 focus:outline-none"
+                  />
+                </ModalField>
                 <ModalField id="om-address" ar="العنوان" fr="Adresse" icon={<MapPin className="h-5 w-5" strokeWidth={1.5} />} error={errors.address}>
                   <input
                     id="om-address"
@@ -316,7 +328,7 @@ export function OrderModal({
                 )}
               </button>
               <a
-                href={whatsappOrderUrl({ lines, shipping, name, address, phone })}
+                href={whatsappOrderUrl({ lines, shipping, name, city, address, phone })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 flex min-h-[44px] w-full items-center justify-between gap-2 rounded-md border border-[#25D366] px-4 text-[13px] font-medium text-[#128C4B] transition-colors hover:bg-[#25D366]/10"

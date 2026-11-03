@@ -40,6 +40,7 @@ const EMPTY: Form = {
 const REQUIRED: { key: "full_name" | "phone" | "address" | "city"; message: string }[] = [
   { key: "full_name", message: "Indiquez votre nom complet." },
   { key: "phone", message: "Indiquez un numéro de téléphone pour la livraison." },
+  { key: "city", message: "Indiquez votre ville." },
   { key: "address", message: "Indiquez votre adresse de livraison." },
 ];
 
@@ -210,6 +211,7 @@ export function Checkout() {
               error={errors.phone}
               required
             />
+            <Field label="Ville · المدينة" name="city" value={form.city} onChange={set("city")} error={errors.city} autoComplete="address-level2" required className="sm:col-span-2" />
             <Field label="Adresse" name="address" value={form.address} onChange={set("address")} error={errors.address} autoComplete="street-address" required className="sm:col-span-2" />
             <div className="sm:col-span-2">
               <label htmlFor="receipt_name" className="field-label">
