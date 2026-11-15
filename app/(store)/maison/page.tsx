@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ParallaxImage } from "@/components/home/ParallaxImage";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { EDITORIAL_IMAGES, SOCIAL_LINKS, STORE } from "@/lib/constants";
+import { EDITORIAL_IMAGES, LEGAL, SOCIAL_LINKS, STORE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "La Maison",
@@ -135,6 +135,20 @@ export default function MaisonPage() {
           <Link href="/boutique" className="btn-primary">
             Découvrir nos créations
           </Link>
+        </div>
+      </section>
+      <section id="informations-legales" className="scroll-mt-32 bg-ivoire py-16 md:py-20">
+        <div className="container max-w-3xl text-center">
+          <SectionHeading eyebrow="Informations légales" title="Business Legal Information" />
+          <dl className="mt-10 space-y-3 text-[15px]">
+            <div><dt className="inline font-medium">Business Legal Name : </dt><dd className="inline">{LEGAL.legalName}</dd></div>
+            <div><dt className="inline font-medium">Commercial Brand Name : </dt><dd className="inline">{LEGAL.brandName}</dd></div>
+            <div><dt className="inline font-medium">Business Address : </dt><dd className="inline">{LEGAL.address}</dd></div>
+            <div><dt className="inline font-medium">Business Manager : </dt><dd className="inline">{LEGAL.manager}</dd></div>
+          </dl>
+          <p className="mt-6 text-[14px] opacity-80">
+            {LEGAL.brandName} is the commercial brand operated by {LEGAL.legalName}.
+          </p>
         </div>
       </section>
     </>

@@ -2,7 +2,7 @@ import { Clock, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
-import { BRAND, SOCIAL_LINKS, STORE } from "@/lib/constants";
+import { BRAND, LEGAL, SOCIAL_LINKS, STORE } from "@/lib/constants";
 import type { Collection } from "@/lib/types";
 import { NewsletterForm } from "./NewsletterForm";
 
@@ -101,6 +101,20 @@ export function Footer({ collections }: { collections: Pick<Collection, "name" |
               </a>
             </li>
           </FooterCol>
+        </div>
+
+        {/* Informations légales */}
+        <div id="informations-legales" className="scroll-mt-32 border-t border-or-500/20 py-10 text-center">
+          <h3 className="eyebrow text-or-400">Business Legal Information</h3>
+          <dl className="mx-auto mt-5 grid max-w-3xl gap-x-8 gap-y-3 text-[13px] text-or-100/80 sm:grid-cols-2">
+            <div><dt className="inline text-or-300">Business Legal Name : </dt><dd className="inline">{LEGAL.legalName}</dd></div>
+            <div><dt className="inline text-or-300">Commercial Brand Name : </dt><dd className="inline">{LEGAL.brandName}</dd></div>
+            <div><dt className="inline text-or-300">Business Address : </dt><dd className="inline">{LEGAL.address}</dd></div>
+            <div><dt className="inline text-or-300">Business Manager : </dt><dd className="inline">{LEGAL.manager}</dd></div>
+          </dl>
+          <p className="mt-5 text-[12px] text-or-200/70">
+            {LEGAL.brandName} is the commercial brand operated by {LEGAL.legalName}.
+          </p>
         </div>
 
         <div className="flex flex-col items-center justify-between gap-6 border-t border-or-500/20 py-8 md:flex-row">

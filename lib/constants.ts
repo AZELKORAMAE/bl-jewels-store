@@ -6,6 +6,14 @@ export const BRAND = {
   email: "bl.jewels.store@gmail.com",
 };
 
+/** Informations légales de l'entreprise (vérification Meta Business). */
+export const LEGAL = {
+  legalName: "OUCHATER YAMNA",
+  brandName: "BL JEWELS",
+  address: "168 Kissariat El Manjra, Bd El Fida, Casablanca, Morocco",
+  manager: "AYOUB BELHADJ",
+};
+
 const U = "https://images.unsplash.com/";
 
 /** Visuels éditoriaux de la page d'accueil (remplaçables par vos propres photos). */
