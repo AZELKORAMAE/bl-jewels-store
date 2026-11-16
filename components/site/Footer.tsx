@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon } from "@/components/ui/SocialIcons";
@@ -60,12 +60,10 @@ export function Footer({ collections }: { collections: Pick<Collection, "name" |
                 {STORE.phone}
               </a>
               <a
-                href={SOCIAL_LINKS[0].href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex min-h-[36px] items-center gap-2 text-[14px] text-or-100/85 hover:text-or-300"
+                href={`mailto:${STORE.email}`}
+                className="mt-2 inline-flex min-h-[36px] items-center gap-2 break-all text-[14px] text-or-100/85 hover:text-or-300"
               >
-                <InstagramIcon className="h-4 w-4 text-or-400" /> {STORE.instagramHandle}
+                <Mail className="h-4 w-4 text-or-400" strokeWidth={1.5} /> {STORE.email}
               </a>
             </div>
           </div>

@@ -48,6 +48,7 @@ export const STORE = {
   closed: "Fermé le vendredi",
   phone: "+212 6 55 77 79 34",
   phoneHref: "tel:+212655777934",
+  email: "ayoubdinhomsn@gmail.com",
   mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(STORE_ADDRESS)}`,
   mapsEmbed: `https://www.google.com/maps?q=${encodeURIComponent(STORE_ADDRESS)}&output=embed`,
 };
