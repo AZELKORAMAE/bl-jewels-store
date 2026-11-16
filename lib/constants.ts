@@ -3,7 +3,7 @@ import type { OrderStatus } from "./types";
 export const BRAND = {
   name: "BL Jewels",
   tagline: "Maison de Joaillerie",
-  email: "bl.jewels.store@gmail.com",
+  email: "ayoubdinhomsn@gmail.com",
 };
 
 /** Informations légales de l'entreprise (vérification Meta Business). */
@@ -48,7 +48,7 @@ export const STORE = {
   closed: "Fermé le vendredi",
   phone: "+212 6 55 77 79 34",
   phoneHref: "tel:+212655777934",
-  email: "ayoubdinhomsn@gmail.com",
+  email: BRAND.email,
   mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(STORE_ADDRESS)}`,
   mapsEmbed: `https://www.google.com/maps?q=${encodeURIComponent(STORE_ADDRESS)}&output=embed`,
 };
